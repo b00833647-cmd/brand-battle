@@ -2025,6 +2025,28 @@ function toggleSound() {
   else { btn.classList.remove('muted'); btn.textContent = '♪'; }
 }
 
+/* Autoplay-on-first-interaction
+   Browsers block true autoplay until the user interacts. We bind to a wide
+   set of events so the music kicks in the instant the user does anything —
+   moving the mouse, scrolling, tapping. Listeners self-remove after firing. */
+(function armAutoplay() {
+  let started = false;
+  function go() {
+    if (started) return;
+    started = true;
+    try {
+      chip.init();
+      chip.start();
+      const btn = document.getElementById('soundToggle');
+      if (btn) { btn.classList.remove('muted'); btn.textContent = '♪'; }
+    } catch (e) {}
+  }
+  const events = ['pointerdown', 'pointermove', 'mousedown', 'mousemove', 'click', 'keydown', 'touchstart', 'scroll', 'wheel'];
+  events.forEach(ev => {
+    window.addEventListener(ev, go, { once: true, passive: true, capture: true });
+  });
+})();
+
 /* ============================================================
    GAME DATA
 ============================================================ */
