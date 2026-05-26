@@ -1,0 +1,3322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brand Battle — Marketing Analytics Showdown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0F1E;
+    --bg-2: #0F1628;
+    --bg-3: #141C32;
+    --panel: #131A2E;
+    --panel-2: #1A2240;
+    --border: #1F2A44;
+    --border-light: #2A3656;
+    --ink: #E6EBF5;
+    --ink-dim: #8B95B5;
+    --ink-faint: #4A5572;
+
+    --player: #60A5FA;
+    --accent: #7DD3FC;
+    --warn: #FBBF24;
+    --teal: #2DD4BF;
+    --violet: #A78BFA;
+
+    --robo: #F472B6;
+    --lux:  #C084FC;
+    --budget: #FBBF24;
+    --trend: #34D399;
+    --nobuy: rgba(255,255,255,0.08);
+
+    --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  .display { font-family: 'Space Grotesk', 'Inter', sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ============ BACKGROUND LAYERS ============ */
+  .bg-aurora {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(96,165,250,0.18) 0%, transparent 35%),
+      radial-gradient(circle at 85% 70%, rgba(192,132,252,0.14) 0%, transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(45,212,191,0.10) 0%, transparent 40%);
+    animation: auroraDrift 16s ease-in-out infinite alternate;
+  }
+  @keyframes auroraDrift {
+    0%   { transform: translate(0, 0) scale(1); filter: hue-rotate(0deg); }
+    100% { transform: translate(-3%, 2%) scale(1.05); filter: hue-rotate(15deg); }
+  }
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+  }
+  .bg-particles {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    animation: floatUp 18s linear infinite;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10%  { opacity: 0.4; }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+  }
+
+  .app { max-width: 1280px; margin: 0 auto; padding: 28px 24px; position: relative; }
+
+  /* ============ SOUND TOGGLE ============ */
+  .sound-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s var(--ease-out-back);
+  }
+  .sound-toggle:hover { border-color: var(--player); color: var(--player); transform: scale(1.1) rotate(10deg); }
+  .sound-toggle.muted { opacity: 0.5; }
+
+  /* ============ INTRO ============ */
+  .intro {
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 28px;
+    animation: heroIn 1s var(--ease-out-expo);
+  }
+  @keyframes heroIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .intro .tag {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-faint);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    font-size: 11px;
+    animation: pulseGlow 4s ease-in-out infinite;
+  }
+  @keyframes pulseGlow {
+    0%, 100% { color: var(--ink-faint); }
+    50% { color: var(--player); }
+  }
+  .intro h1 {
+    font-size: clamp(56px, 11vw, 132px);
+    font-weight: 800;
+    letter-spacing: -4px;
+    line-height: 0.9;
+    color: var(--ink);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .intro h1 .accent {
+    color: var(--player);
+    display: inline-block;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .intro h1 .word {
+    display: inline-block;
+    animation: wordSlide 0.7s var(--ease-out-expo) both;
+  }
+  .intro h1 .word:nth-child(1) { animation-delay: 0.1s; }
+  .intro h1 .word:nth-child(2) { animation-delay: 0.25s; }
+  @keyframes wordSlide {
+    from { opacity: 0; transform: translateY(40px) rotateX(-90deg); }
+    to   { opacity: 1; transform: translateY(0) rotateX(0); }
+  }
+  .intro .story {
+    max-width: 640px;
+    font-size: 16px;
+    color: var(--ink-dim);
+    line-height: 1.7;
+    font-weight: 400;
+    animation: fadeUp 1s 0.5s var(--ease-out-expo) both;
+  }
+  .intro .story strong { color: var(--ink); font-weight: 600; }
+
+  .level-preview {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    max-width: 640px;
+    width: 100%;
+    animation: fadeUp 1s 0.7s var(--ease-out-expo) both;
+  }
+  .lvl-pill {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 8px;
+    text-align: center;
+    transition: all .25s var(--ease-out-back);
+    cursor: default;
+  }
+  .lvl-pill:hover {
+    transform: translateY(-4px);
+    border-color: var(--player);
+    box-shadow: 0 8px 24px rgba(96,165,250,0.15);
+  }
+  .lvl-pill:hover .em { animation: wiggle 0.6s ease-in-out; }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-12deg) scale(1.1); }
+    75% { transform: rotate(12deg) scale(1.1); }
+  }
+  .lvl-pill .num {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-faint);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .lvl-pill .em { font-size: 22px; margin-bottom: 4px; display: inline-block; transition: transform .2s; }
+  .lvl-pill .name { font-size: 12px; font-weight: 500; color: var(--ink-dim); }
+
+  /* ============ BUTTONS ============ */
+  .btn-primary {
+    background: var(--player);
+    color: var(--bg);
+    padding: 14px 36px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: all .2s var(--ease-out-back);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    transform: translate(-50%, -50%);
+    transition: width .5s ease, height .5s ease;
+  }
+  .btn-primary:hover { background: #93C5FD; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(96,165,250,0.3); }
+  .btn-primary:hover::after { width: 200px; height: 200px; }
+  .btn-primary:active { transform: translateY(0) scale(0.97); }
+  .btn-primary:disabled { background: var(--border); color: var(--ink-faint); cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* ============ LEVEL OVERLAY ============ */
+  .level-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,15,30,0.95);
+    backdrop-filter: blur(16px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .4s ease, backdrop-filter .4s ease;
+    padding: 24px;
+    overflow-y: auto;
+  }
+  .level-overlay.show { opacity: 1; pointer-events: all; }
+  .level-overlay-inner {
+    text-align: center;
+    max-width: 720px;
+    transform: scale(0.92) translateY(20px);
+    opacity: 0;
+    transition: all .5s var(--ease-out-expo);
+  }
+  .level-overlay.show .level-overlay-inner {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    transition-delay: 0.1s;
+  }
+  .level-overlay .lvl-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: var(--player);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(96,165,250,0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(96,165,250,0.3);
+  }
+  .level-overlay .lvl-title {
+    font-size: clamp(40px, 6vw, 68px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    margin-bottom: 14px;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.0;
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 1.2em;
+  }
+  .level-overlay .lvl-title .cursor {
+    display: inline-block;
+    width: 4px;
+    height: 0.85em;
+    background: var(--player);
+    margin-left: 4px;
+    vertical-align: middle;
+    animation: blink 0.6s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .level-overlay .lvl-sub {
+    font-size: 16px;
+    color: var(--ink-dim);
+    max-width: 580px;
+    text-align: center;
+    margin: 0 auto 28px;
+    line-height: 1.6;
+  }
+
+  /* learning objectives */
+  .objectives-card {
+    background: rgba(96,165,250,0.06);
+    border: 1px solid rgba(96,165,250,0.25);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .objectives-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--player);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .objective-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--ink);
+    opacity: 0;
+    transform: translateX(-12px);
+    animation: objIn .5s var(--ease-out-expo) forwards;
+  }
+  .objective-row:nth-child(2) { animation-delay: 0.3s; }
+  .objective-row:nth-child(3) { animation-delay: 0.45s; }
+  .objective-row:nth-child(4) { animation-delay: 0.6s; }
+  @keyframes objIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .obj-check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(96,165,250,0.15);
+    border: 1.5px solid var(--player);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--player);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* mission card */
+  .mission-card {
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.35);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 22px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .mission-card::before {
+    content: '';
+    position: absolute;
+    top: -40%; right: -10%;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(251,191,36,0.12), transparent 70%);
+    pointer-events: none;
+  }
+  .mission-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--warn);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    text-align: center;
+    position: relative;
+  }
+  .mission-goal {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.3px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+  }
+  .mission-goal::before {
+    content: '🎯';
+    font-size: 22px;
+    flex-shrink: 0;
+    line-height: 1.1;
+    animation: targetPulse 2s ease-in-out infinite;
+  }
+  @keyframes targetPulse {
+    0%, 100% { transform: scale(1) rotate(0); }
+    50% { transform: scale(1.1) rotate(8deg); }
+  }
+  .mission-tactic {
+    font-size: 13.5px;
+    color: var(--ink-dim);
+    line-height: 1.55;
+    padding-left: 32px;
+    position: relative;
+  }
+  .mission-tactic::before { content: '💡 '; }
+  .mission-tactic strong { color: var(--warn); font-weight: 600; }
+  .mission-win {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(251,191,36,0.25);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.3px;
+    padding-left: 32px;
+    position: relative;
+  }
+  .mission-win strong { color: var(--warn); font-weight: 600; }
+
+  /* in-game briefing mission style */
+  .briefing-mission .goal {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .briefing-mission .tactic {
+    font-size: 13px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+  }
+
+  .lvl-unlocks {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  .lvl-unlock {
+    background: rgba(192,132,252,0.08);
+    border: 1px solid rgba(192,132,252,0.3);
+    border-radius: 10px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink);
+    opacity: 0;
+    transform: scale(0.85);
+    animation: unlockPop .5s var(--ease-out-back) forwards;
+  }
+  .lvl-unlock:nth-child(1) { animation-delay: 0.8s; }
+  .lvl-unlock:nth-child(2) { animation-delay: 0.95s; }
+  .lvl-unlock:nth-child(3) { animation-delay: 1.1s; }
+  @keyframes unlockPop {
+    to { opacity: 1; transform: scale(1); }
+  }
+  .lvl-unlock .em { font-size: 18px; }
+
+  /* ============ HEADER ============ */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    background: var(--panel);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 14px;
+    animation: slideDown 0.5s var(--ease-out-expo) both;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .header .score { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .score-block { display: flex; flex-direction: column; }
+  .score-block .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .score-block .value {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+    transition: transform .2s ease;
+  }
+  .score-block .value.bumped { animation: bump .35s var(--ease-out-back); }
+  @keyframes bump {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.18); }
+    100% { transform: scale(1); }
+  }
+  .round-badge {
+    background: rgba(96,165,250,0.12);
+    color: var(--player);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    font-size: 12px;
+    border: 1px solid rgba(96,165,250,0.3);
+  }
+
+  /* ============ EVENT BANNER ============ */
+  .event-banner {
+    background: linear-gradient(135deg, rgba(125,211,252,0.1), rgba(192,132,252,0.05));
+    border: 1px solid rgba(125,211,252,0.4);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    animation: shakeIn 0.7s var(--ease-out-expo);
+    position: relative;
+    overflow: hidden;
+  }
+  .event-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(125,211,252,0.1), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    to { transform: translateX(100%); }
+  }
+  @keyframes shakeIn {
+    0% { opacity: 0; transform: scale(0.95); }
+    30% { transform: scale(1.02) translateX(-6px); }
+    50% { transform: scale(1.02) translateX(6px); }
+    70% { transform: scale(1.02) translateX(-3px); }
+    100% { opacity: 1; transform: scale(1) translateX(0); }
+  }
+  .event-emoji { font-size: 36px; line-height: 1; animation: wobble 3s ease-in-out infinite; }
+  @keyframes wobble {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-8deg); }
+    75% { transform: rotate(8deg); }
+  }
+  .event-info { flex: 1; position: relative; z-index: 1; }
+  .event-info .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.8px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .event-info .name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .event-info .desc { font-size: 13px; color: var(--ink-dim); line-height: 1.5; }
+
+  /* ============ RIVAL LINEUP ============ */
+  .rival-lineup {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .rival-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    animation: chipIn 0.4s var(--ease-out-back) both;
+    transition: transform .15s ease;
+  }
+  .rival-chip:nth-child(2) { animation-delay: 0.1s; }
+  .rival-chip:nth-child(3) { animation-delay: 0.2s; }
+  .rival-chip:nth-child(4) { animation-delay: 0.3s; }
+  .rival-chip:nth-child(5) { animation-delay: 0.4s; }
+  .rival-chip:hover { transform: translateY(-2px); }
+  @keyframes chipIn {
+    from { opacity: 0; transform: scale(0.7) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .rival-chip .em { font-size: 16px; }
+  .rival-chip .nm { font-weight: 500; }
+
+  /* ============ BRIEFING ============ */
+  .briefing {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--player);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+  }
+  .briefing-title {
+    font-size: 10px;
+    color: var(--player);
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+  .briefing-text { font-size: 14px; color: var(--ink); line-height: 1.5; }
+  .briefing-text strong { color: var(--accent); font-weight: 600; }
+
+  /* ============ ATTRS ============ */
+  .attrs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .attr-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    transition: all .25s var(--ease-out-back);
+    animation: slideUp 0.5s var(--ease-out-expo) both;
+  }
+  .attr-card:nth-child(1) { animation-delay: 0.05s; }
+  .attr-card:nth-child(2) { animation-delay: 0.15s; }
+  .attr-card:nth-child(3) { animation-delay: 0.25s; }
+  .attr-card:hover {
+    border-color: var(--border-light);
+    transform: translateY(-2px);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .attr-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-dim);
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+  .attr-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opt {
+    padding: 10px 8px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .18s var(--ease-out-back);
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    user-select: none;
+    color: var(--ink-dim);
+    position: relative;
+  }
+  .opt:hover {
+    border-color: var(--border-light);
+    background: var(--bg-3);
+    color: var(--ink);
+    transform: translateY(-2px) scale(1.02);
+  }
+  .opt:hover .emoji { animation: wiggle 0.5s ease-in-out; }
+  .opt.selected {
+    border-color: var(--player);
+    background: rgba(96,165,250,0.14);
+    color: var(--player);
+    animation: selectPulse 2s ease-in-out infinite;
+  }
+  @keyframes selectPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(96,165,250,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(96,165,250,0); }
+  }
+  .opt.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 4px; right: 6px;
+    font-size: 10px;
+    color: var(--player);
+    font-weight: 700;
+  }
+  .opt .emoji { font-size: 22px; display: block; margin-bottom: 4px; transition: transform .15s; }
+  .opt .hint {
+    display: block;
+    margin-top: 5px;
+    font-size: 9.5px;
+    color: var(--ink-faint);
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    line-height: 1.3;
+    text-transform: none;
+    min-height: 22px;
+  }
+  .opt:hover .hint { color: var(--ink-dim); }
+  .opt.selected .hint { color: var(--player); opacity: 0.85; }
+
+  /* ============ DESIGN PROGRESS ============ */
+  .design-progress {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .progress-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .progress-text strong { color: var(--player); font-weight: 700; }
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--player), var(--accent));
+    border-radius: 3px;
+    transition: width .5s var(--ease-out-back);
+    box-shadow: 0 0 8px rgba(96,165,250,0.4);
+  }
+  .progress-steps {
+    display: flex;
+    gap: 6px;
+  }
+  .progress-step {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    transition: all .3s var(--ease-out-back);
+  }
+  .progress-step.done {
+    background: var(--player);
+    border-color: var(--player);
+    color: var(--bg);
+    transform: scale(1.05);
+  }
+
+  /* ============ LIVE INSIGHT PANEL ============ */
+  .insight-panel {
+    background: linear-gradient(135deg, rgba(96,165,250,0.05), rgba(125,211,252,0.02));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .insight-panel::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -10%;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(125,211,252,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .insight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+    position: relative;
+  }
+  .insight-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .insight-label .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(125,211,252,0.6);
+    animation: liveDot 1.6s ease-out infinite;
+  }
+  @keyframes liveDot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(125,211,252,0.6); }
+    50% { box-shadow: 0 0 0 8px rgba(125,211,252,0); }
+  }
+  .insight-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.5px;
+  }
+  .insight-status.ready { color: var(--teal); }
+
+  .product-preview {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .preview-items {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .preview-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 500;
+    transition: all .3s var(--ease-out-back);
+  }
+  .preview-item .em { font-size: 20px; }
+  .preview-item.blank { color: var(--ink-faint); opacity: 0.4; font-style: italic; }
+  .preview-sep { color: var(--ink-faint); opacity: 0.4; }
+  .preview-econ {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+    letter-spacing: 0.3px;
+  }
+  .preview-econ span { color: var(--accent); font-weight: 600; }
+
+  .appeal-bars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .appeal-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all .3s var(--ease-out-back);
+    position: relative;
+  }
+  .appeal-row.top {
+    border-color: var(--player);
+    background: rgba(96,165,250,0.08);
+    transform: scale(1.02);
+  }
+  .appeal-row.top::after {
+    content: 'TOP';
+    position: absolute;
+    top: -6px; right: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: var(--bg);
+    background: var(--player);
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .appeal-seg {
+    font-size: 12px;
+    min-width: 110px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .appeal-bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-3);
+    border-radius: 3px;
+    overflow: hidden;
+    min-width: 60px;
+  }
+  .appeal-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    transition: width .6s var(--ease-out-expo);
+  }
+  .appeal-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    min-width: 38px;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  .smart-hint {
+    background: rgba(45,212,191,0.06);
+    border: 1px solid rgba(45,212,191,0.25);
+    border-left: 3px solid var(--teal);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    color: var(--ink);
+    line-height: 1.55;
+    transition: all .3s ease;
+  }
+  .smart-hint strong { color: var(--teal); font-weight: 600; }
+  .smart-hint .em-large { font-size: 16px; margin-right: 6px; }
+
+  /* ============ PRICING ============ */
+  .pricing {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 18px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: center;
+    animation: slideUp 0.5s 0.35s var(--ease-out-expo) both;
+  }
+  .price-display {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--player);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+    letter-spacing: -1px;
+    transition: transform .15s ease, color .15s ease;
+  }
+  .price-display.bumped { animation: bump .3s var(--ease-out-back); }
+  .pricing-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .pricing-right .label { font-size: 10px; color: var(--ink-faint); letter-spacing: 1.5px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; }
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    background: linear-gradient(90deg, var(--player) 0%, var(--player) var(--p, 33%), var(--bg-3) var(--p, 33%));
+    border-radius: 2px;
+    outline: none;
+    margin-top: 14px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--player);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform .1s ease, box-shadow .15s ease;
+    box-shadow: 0 0 0 0 rgba(96,165,250,0.4);
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 8px rgba(96,165,250,0.15);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 20px; height: 20px;
+    background: var(--player);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+  .price-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+  }
+  .cost-readout {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 10px;
+    letter-spacing: 0.3px;
+  }
+  .cost-readout span { color: var(--accent); transition: color .2s; }
+
+  /* ============ DEPLOY ============ */
+  .deploy-row { display: flex; justify-content: center; margin-bottom: 18px; }
+
+  /* ============ AI THINKING ============ */
+  .ai-thinking {
+    text-align: center;
+    padding: 40px 18px;
+    color: var(--ink-dim);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 12px;
+    animation: thinkPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes thinkPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+  .ai-thinking-bars {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 12px;
+  }
+  .ai-thinking-bars span {
+    width: 4px;
+    height: 16px;
+    background: var(--player);
+    border-radius: 2px;
+    animation: barJump 0.9s ease-in-out infinite;
+  }
+  .ai-thinking-bars span:nth-child(2) { animation-delay: 0.1s; }
+  .ai-thinking-bars span:nth-child(3) { animation-delay: 0.2s; }
+  .ai-thinking-bars span:nth-child(4) { animation-delay: 0.3s; }
+  .ai-thinking-bars span:nth-child(5) { animation-delay: 0.4s; }
+  @keyframes barJump {
+    0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+    50% { transform: scaleY(1.4); opacity: 1; }
+  }
+
+  /* ============ TAUNTS ============ */
+  .taunts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .taunt {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    animation: tauntIn 0.5s var(--ease-out-back) both;
+  }
+  @keyframes tauntIn {
+    from { opacity: 0; transform: translateX(-20px) scale(0.95); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  .taunt .avatar {
+    font-size: 28px;
+    line-height: 1;
+    animation: tauntBounce 0.6s var(--ease-out-back);
+  }
+  @keyframes tauntBounce {
+    0% { transform: scale(0) rotate(-180deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+  .taunt .bubble { flex: 1; }
+  .taunt .who { font-size: 10px; font-weight: 600; margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; letter-spacing: 1.2px; text-transform: uppercase; }
+  .taunt .msg { font-size: 13px; color: var(--ink); line-height: 1.4; }
+
+  /* ============ RESULTS ============ */
+  .results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .product-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    border-left-width: 3px;
+    animation: cardIn 0.45s var(--ease-out-back) both;
+    transition: transform .2s ease;
+  }
+  .product-card:nth-child(1) { animation-delay: 0s; }
+  .product-card:nth-child(2) { animation-delay: 0.1s; }
+  .product-card:nth-child(3) { animation-delay: 0.2s; }
+  .product-card:nth-child(4) { animation-delay: 0.3s; }
+  .product-card:nth-child(5) { animation-delay: 0.4s; }
+  .product-card:hover { transform: translateY(-3px); }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .product-card .who {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .product-lines { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--ink-faint); }
+  .product-lines .line { display: flex; justify-content: space-between; gap: 8px; }
+  .product-lines .line span:last-child { color: var(--ink); font-weight: 500; }
+  .product-stats {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+    text-align: center;
+  }
+  .product-stats div { display: flex; flex-direction: column; }
+  .product-stats .v { font-weight: 700; font-size: 15px; font-family: 'JetBrains Mono', monospace; color: var(--ink); letter-spacing: -0.3px; }
+  .product-stats .k { font-size: 9px; letter-spacing: 1px; color: var(--ink-faint); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
+  /* ============ MARKET ============ */
+  .market {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .market-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-dim);
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+  .market-grid {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    gap: 4px;
+  }
+  .cust {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: var(--nobuy);
+    transform: scale(0);
+    transition: background-color .25s ease, transform .35s var(--ease-out-back);
+  }
+  .cust.set { transform: scale(1); }
+  .market-legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--ink-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .leg-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ============ TAKEAWAY ============ */
+  .takeaway {
+    background: linear-gradient(135deg, rgba(45,212,191,0.08), rgba(96,165,250,0.06));
+    border: 1px solid rgba(45,212,191,0.35);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    animation: takeawayIn 0.6s var(--ease-out-expo) both;
+  }
+  @keyframes takeawayIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .takeaway::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -10%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(45,212,191,0.15), transparent 70%);
+    pointer-events: none;
+  }
+  .takeaway-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .takeaway-label::before {
+    content: '🎓';
+    font-size: 16px;
+  }
+  .takeaway-headline {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .takeaway-detail {
+    font-size: 14px;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .takeaway-session {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--teal);
+    background: rgba(45,212,191,0.1);
+    border: 1px solid rgba(45,212,191,0.3);
+    padding: 5px 12px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ============ FINAL ============ */
+  .final { text-align: center; padding: 40px 24px; }
+  .winner-banner {
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: -3px;
+    margin-bottom: 14px;
+    color: var(--ink);
+    font-family: 'Space Grotesk', sans-serif;
+    animation: bannerIn 0.8s var(--ease-out-back) both;
+  }
+  @keyframes bannerIn {
+    from { opacity: 0; transform: scale(0.7); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .winner-banner .badge { color: var(--player); }
+  .winner-sub { color: var(--ink-dim); font-size: 16px; margin-bottom: 32px; max-width: 640px; margin-left:auto; margin-right:auto; line-height: 1.6; }
+  .final-scores {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .final-card {
+    padding: 16px 22px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    min-width: 160px;
+    background: var(--panel);
+    border-left-width: 3px;
+    transition: transform .2s var(--ease-out-back);
+    animation: cardIn 0.5s var(--ease-out-back) both;
+  }
+  .final-card:hover { transform: translateY(-4px) scale(1.02); }
+  .final-card:nth-child(1) { animation-delay: 0.1s; }
+  .final-card:nth-child(2) { animation-delay: 0.2s; }
+  .final-card:nth-child(3) { animation-delay: 0.3s; }
+  .final-card:nth-child(4) { animation-delay: 0.4s; }
+  .final-card:nth-child(5) { animation-delay: 0.5s; }
+  .final-card .name { font-weight: 600; margin-bottom: 4px; font-size: 13px; }
+  .final-card .val { font-size: 28px; font-weight: 700; font-family: 'JetBrains Mono', monospace; letter-spacing: -1px; }
+  .final-card .rank { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-faint); margin-top: 4px; letter-spacing: 1px; }
+
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .chart-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .chart-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-dim);
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+  svg.chart { width: 100%; height: 280px; background: var(--bg-2); border-radius: 10px; }
+
+  .segments-final {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    text-align: left;
+    margin-top: 8px;
+  }
+  .seg-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    transition: transform .2s ease;
+  }
+  .seg-card:hover { transform: translateY(-2px); }
+  .seg-card .nm { font-weight: 600; margin-bottom: 2px; font-size: 13px; }
+  .seg-card .desc { font-size: 11px; color: var(--ink-faint); line-height: 1.4; margin-bottom: 10px; }
+  .seg-stats {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-dim);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px,1fr));
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  .seg-stats span strong { font-weight: 700; }
+  .seg-bar {
+    height: 10px;
+    background: var(--bg-3);
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+  }
+  .seg-bar > div { height: 100%; transition: width 1s ease; }
+
+  /* ============ LEADERBOARD ============ */
+  .leaderboard {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 14px;
+    text-align: left;
+    animation: cardIn 0.6s var(--ease-out-back) 0.6s both;
+  }
+  .lb-header { text-align: center; margin-bottom: 20px; }
+  .lb-header h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    margin-bottom: 4px;
+    color: var(--ink);
+    font-weight: 700;
+    letter-spacing: -1px;
+  }
+  .lb-header .lb-sub {
+    color: var(--ink-dim);
+    font-size: 13px;
+  }
+
+  .lb-pos-badge {
+    background: linear-gradient(135deg, rgba(96,165,250,0.12), rgba(125,211,252,0.04));
+    border: 1px solid var(--player);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .lb-pos-badge::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(96,165,250,0.15), transparent 60%);
+    pointer-events: none;
+  }
+  .lb-pos-rank-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .lb-pos-rank {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 44px;
+    font-weight: 800;
+    color: var(--player);
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  .lb-pos-of { color: var(--ink-dim); font-size: 14px; }
+  .lb-pos-percentile {
+    font-size: 13px;
+    color: var(--ink);
+    position: relative;
+  }
+  .lb-pos-percentile strong { color: var(--accent); font-weight: 700; }
+
+  .lb-name-entry {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .lb-name-entry input {
+    flex: 1;
+    padding: 12px 14px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    transition: border-color .15s ease;
+  }
+  .lb-name-entry input:focus {
+    outline: none;
+    border-color: var(--player);
+  }
+  .lb-name-entry input::placeholder { color: var(--ink-faint); }
+  .lb-save-btn {
+    background: var(--player);
+    color: var(--bg);
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: all .15s ease;
+    white-space: nowrap;
+  }
+  .lb-save-btn:hover { background: #93C5FD; transform: translateY(-1px); }
+  .lb-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .lb-saved-msg {
+    text-align: center;
+    color: var(--teal);
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+  .lb-saved-msg.show { opacity: 1; }
+
+  .lb-table-header {
+    display: grid;
+    grid-template-columns: 60px 1fr 100px 240px;
+    gap: 10px;
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .lb-table-header > div:nth-child(3) { text-align: right; }
+  .lb-table-header > div:nth-child(4) { text-align: center; }
+
+  .lb-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 100px 240px;
+    gap: 10px;
+    padding: 12px 14px;
+    align-items: center;
+    background: var(--bg-2);
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: all .2s var(--ease-out-back);
+    margin-bottom: 4px;
+    animation: lbRowIn 0.4s var(--ease-out-back) both;
+  }
+  @keyframes lbRowIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .lb-row:hover { background: var(--bg-3); transform: translateX(2px); }
+  .lb-row.you {
+    background: rgba(96,165,250,0.14);
+    border-color: var(--player);
+    box-shadow: 0 0 0 2px rgba(96,165,250,0.2), 0 8px 20px rgba(96,165,250,0.1);
+    transform: scale(1.01);
+  }
+  .lb-row.gold { background: linear-gradient(90deg, rgba(251,191,36,0.15), rgba(251,191,36,0.03)); border-color: rgba(251,191,36,0.45); }
+  .lb-row.silver { background: linear-gradient(90deg, rgba(200,210,224,0.1), rgba(200,210,224,0.02)); border-color: rgba(200,210,224,0.4); }
+  .lb-row.bronze { background: linear-gradient(90deg, rgba(205,127,50,0.1), rgba(205,127,50,0.02)); border-color: rgba(205,127,50,0.4); }
+  .lb-row.you.gold { box-shadow: 0 0 0 2px rgba(96,165,250,0.3), 0 0 30px rgba(251,191,36,0.2); }
+
+  .lb-rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--ink);
+    text-align: center;
+  }
+  .lb-rank.medal { font-size: 24px; }
+
+  .lb-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .lb-name .you-tag {
+    display: inline-block;
+    background: var(--player);
+    color: var(--bg);
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .lb-total {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--player);
+    text-align: right;
+    letter-spacing: -0.5px;
+  }
+  .lb-row.gold .lb-total { color: #FBBF24; }
+  .lb-row.silver .lb-total { color: #C8D2E0; }
+  .lb-row.bronze .lb-total { color: #E2A767; }
+
+  .lb-levels {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+  .lb-level {
+    height: 38px;
+    background: var(--bg-3);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .lb-level-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    background: var(--player);
+    transition: height .8s var(--ease-out-back);
+    opacity: 0.6;
+  }
+  .lb-row.you .lb-level-bar { opacity: 0.85; }
+  .lb-row.gold .lb-level-bar { background: #FBBF24; }
+  .lb-row.silver .lb-level-bar { background: #C8D2E0; }
+  .lb-row.bronze .lb-level-bar { background: #CD7F32; }
+  .lb-level-num {
+    position: relative;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink);
+    padding-bottom: 4px;
+    z-index: 1;
+    font-weight: 700;
+  }
+  .lb-row.you .lb-level-num { color: white; }
+
+  .lb-ellipsis {
+    text-align: center;
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    padding: 8px;
+    letter-spacing: 4px;
+  }
+
+  /* Mobile leaderboard: stack the level bars */
+  @media (max-width: 720px) {
+    .lb-table-header, .lb-row {
+      grid-template-columns: 50px 1fr 80px;
+    }
+    .lb-table-header > div:nth-child(4), .lb-row > .lb-levels {
+      grid-column: 1 / -1;
+      margin-top: 8px;
+    }
+  }
+
+  .hidden { display: none !important; }
+  .fade-in { animation: fadeIn .4s var(--ease-out-expo) both; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .phase-enter { animation: phaseIn .5s var(--ease-out-expo) both; }
+  @keyframes phaseIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* confetti */
+  .confetti {
+    position: fixed;
+    top: -10px;
+    width: 8px;
+    height: 12px;
+    z-index: 999;
+    pointer-events: none;
+    animation: fall linear forwards;
+    border-radius: 1px;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0.2; }
+  }
+
+  /* floating emoji burst */
+  .burst {
+    position: fixed;
+    pointer-events: none;
+    z-index: 998;
+    font-size: 24px;
+    animation: burstUp 1.5s var(--ease-out-expo) forwards;
+  }
+  @keyframes burstUp {
+    0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+    20% { opacity: 1; transform: translate(0, -10px) scale(1); }
+    100% { opacity: 0; transform: translate(var(--dx, 40px), -150px) scale(0.8); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-aurora"></div>
+<div class="bg-grid"></div>
+<div class="bg-particles" id="particles"></div>
+
+<button class="sound-toggle" id="soundToggle" title="Toggle music" onclick="toggleSound()">♪</button>
+
+<div class="app">
+
+  <!-- ============== INTRO ============== -->
+  <div id="intro" class="intro">
+    <div class="tag">A MARKETING ANALYTICS GAME · ESSEC</div>
+    <h1><span class="word">Brand<span class="accent">.</span></span><span class="word">Battle</span></h1>
+    <div class="story">
+      You are the new marketing strategist for <strong>Café Lumière</strong> in Paris.
+      Across 5 levels, design coffee shop offerings, set prices, and battle an
+      escalating roster of AI rivals. Every level <strong>teaches one core concept</strong> from class
+      and <strong>unlocks new mechanics</strong> — market shocks, new opponents, taunts.
+    </div>
+    <div class="level-preview">
+      <div class="lvl-pill"><div class="num">LVL 01</div><div class="em">🎯</div><div class="name">Tutorial</div></div>
+      <div class="lvl-pill"><div class="num">LVL 02</div><div class="em">⚡</div><div class="name">Shocks</div></div>
+      <div class="lvl-pill"><div class="num">LVL 03</div><div class="em">💎</div><div class="name">LuxBrand</div></div>
+      <div class="lvl-pill"><div class="num">LVL 04</div><div class="em">🪙</div><div class="name">BudgetBean</div></div>
+      <div class="lvl-pill"><div class="num">LVL 05</div><div class="em">🔥</div><div class="name">Boss Fight</div></div>
+    </div>
+    <button class="btn-primary" onclick="startGame()">Begin Battle  →</button>
+  </div>
+
+  <!-- ============== LEVEL OVERLAY ============== -->
+  <div id="levelOverlay" class="level-overlay">
+    <div class="level-overlay-inner">
+      <div class="lvl-num" id="lvlNum">LEVEL 1</div>
+      <div class="lvl-title" id="lvlTitle"></div>
+      <div class="lvl-sub" id="lvlSub"></div>
+      <div class="objectives-card" id="objectivesCard">
+        <div class="objectives-title">📚 What you'll learn this level</div>
+        <div id="objectivesList"></div>
+      </div>
+      <div class="mission-card" id="missionCard">
+        <div class="mission-title">🎯 Your mission · Level <span id="missionLvlNum">1</span></div>
+        <div class="mission-goal" id="missionGoal"></div>
+        <div class="mission-tactic" id="missionTactic"></div>
+        <div class="mission-win" id="missionWin"></div>
+      </div>
+      <div class="lvl-unlocks" id="lvlUnlocks"></div>
+      <button class="btn-primary" onclick="dismissLevelIntro()">Engage  →</button>
+    </div>
+  </div>
+
+  <!-- ============== GAME ============== -->
+  <div id="game" class="hidden">
+    <div class="header">
+      <div style="display:flex;gap:12px;align-items:center;">
+        <div class="round-badge" id="roundBadge">LEVEL 01 / 05</div>
+      </div>
+      <div class="score" id="scoreRow"></div>
+    </div>
+
+    <div id="eventBanner" class="event-banner hidden"></div>
+    <div id="rivalLineup" class="rival-lineup"></div>
+    <div id="briefing" class="briefing fade-in"></div>
+
+    <div id="designPhase">
+      <div class="design-progress">
+        <div class="progress-text">Design progress <strong id="progressCount">0</strong>/3</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <div class="progress-step" id="step-coffee">1</div>
+          <div class="progress-step" id="step-location">2</div>
+          <div class="progress-step" id="step-extras">3</div>
+        </div>
+      </div>
+      <div class="attrs" id="attrsGrid"></div>
+      <div class="pricing">
+        <div class="pricing-left">
+          <div class="attr-title">💰 Price per cup</div>
+          <input type="range" id="priceSlider" min="2" max="8" step="0.5" value="4" oninput="updatePrice()" />
+          <div class="price-ticks">
+            <span>€2</span><span>€3</span><span>€4</span><span>€5</span><span>€6</span><span>€7</span><span>€8</span>
+          </div>
+          <div class="cost-readout" id="costReadout"></div>
+        </div>
+        <div class="pricing-right">
+          <div class="label">YOUR PRICE</div>
+          <div class="price-display" id="priceDisplay">€4.00</div>
+        </div>
+      </div>
+
+      <div class="insight-panel" id="insightPanel">
+        <div class="insight-header">
+          <div class="insight-label"><span class="dot"></span>Live Market Insight</div>
+          <div class="insight-status" id="insightStatus">Pick attributes to preview appeal</div>
+        </div>
+        <div class="product-preview">
+          <div class="preview-items" id="previewItems"></div>
+          <div class="preview-econ" id="previewEcon"></div>
+        </div>
+        <div class="appeal-bars" id="appealBars"></div>
+        <div class="smart-hint" id="smartHint"></div>
+      </div>
+
+      <div class="deploy-row">
+        <button id="deployBtn" class="btn-primary" onclick="deploy()">Deploy Product  →</button>
+      </div>
+    </div>
+
+    <div id="aiThinking" class="ai-thinking hidden">
+      <div id="thinkingText">Rivals computing optimal strategies</div>
+      <div class="ai-thinking-bars"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+
+    <div id="resultsPhase" class="hidden">
+      <div class="taunts-container" id="tauntsBox"></div>
+      <div class="results" id="resultsCards"></div>
+      <div class="market">
+        <div class="market-title">Market simulation · 100 customers choose</div>
+        <div class="market-grid" id="marketGrid"></div>
+        <div class="market-legend" id="marketLegend"></div>
+      </div>
+
+      <!-- KEY TAKEAWAY -->
+      <div class="takeaway" id="takeawayCard">
+        <div class="takeaway-label">Key Takeaway · Level <span id="takeawayLvlNum">1</span></div>
+        <div class="takeaway-headline" id="takeawayHeadline"></div>
+        <div class="takeaway-detail" id="takeawayDetail"></div>
+        <div class="takeaway-session" id="takeawaySession"></div>
+      </div>
+
+      <div class="deploy-row">
+        <button class="btn-primary" id="nextBtn" onclick="nextRound()">Next Level →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== FINAL ============== -->
+  <div id="final" class="hidden">
+    <div class="final">
+      <div class="winner-banner" id="winnerBanner"></div>
+      <div class="winner-sub" id="winnerSub"></div>
+      <div class="final-scores" id="finalScores"></div>
+
+      <!-- LEADERBOARD -->
+      <div class="leaderboard">
+        <div class="lb-header">
+          <h2>🏆 Global Leaderboard</h2>
+          <div class="lb-sub">See how you stack up against other students who've played</div>
+        </div>
+        <div class="lb-pos-badge" id="lbPosBadge"></div>
+        <div class="lb-name-entry" id="lbNameEntry">
+          <input type="text" id="lbNameInput" placeholder="Your name (e.g., Alex M.)" maxlength="20" />
+          <button class="lb-save-btn" id="lbSaveBtn" onclick="saveLeaderboard()">Save Score</button>
+        </div>
+        <div class="lb-saved-msg" id="lbSavedMsg">✓ Score saved to leaderboard</div>
+        <div class="lb-table-header">
+          <div>Rank</div>
+          <div>Player</div>
+          <div>Total €</div>
+          <div>L1 · L2 · L3 · L4 · L5 profit</div>
+        </div>
+        <div id="lbTable"></div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-title">Positioning Map · all products plotted</div>
+          <svg class="chart" id="posmap" viewBox="0 0 500 280"></svg>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Round-by-Round Profit</div>
+          <svg class="chart" id="profitChart" viewBox="0 0 500 280"></svg>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Segment Capture · all 5 rounds combined</div>
+        <div class="segments-final" id="segmentsFinal"></div>
+      </div>
+
+      <div style="margin-top: 32px;">
+        <button class="btn-primary" onclick="location.reload()">Play Again  ↻</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   BACKGROUND PARTICLES (subtle ambient)
+============================================================ */
+function spawnParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#60A5FA','#7DD3FC','#A78BFA','#34D399','#F472B6'];
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 3 + Math.random() * 5;
+    p.style.width = p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDuration = (12 + Math.random()*16) + 's';
+    p.style.animationDelay = (-Math.random() * 18) + 's';
+    container.appendChild(p);
+  }
+}
+spawnParticles();
+
+/* ============================================================
+   8-BIT CHIPTUNE ENGINE
+============================================================ */
+const NOTE = {
+  'C2':65.41,'D2':73.42,'E2':82.41,'F2':87.31,'G2':98.00,'A2':110.00,'B2':123.47,
+  'C3':130.81,'D3':146.83,'E3':164.81,'G3':196.00,'A3':220.00,'B3':246.94,
+  'C4':261.63,'D4':293.66,'E4':329.63,'F#4':369.99,'G4':392.00,'A4':440.00,'B4':493.88,
+  'C5':523.25,'D5':587.33,'E5':659.25,'F#5':739.99,'G5':783.99,'A5':880.00,'B5':987.77
+};
+const MELODY = [
+  'E5', null, 'B4', null,  null, 'G4', null, 'A4',
+  'B4', null, null, 'A4',  null, 'G4', null, null,
+  'D5', null, 'B4', null,  null, 'A4', null, 'G4',
+  'E4', null, null, null,  'G4', null, 'B4', null
+];
+const BASS = [
+  'E2', null, null, null, null, null, 'E2', null,
+  'A2', null, null, null, null, null, 'A2', null,
+  'G2', null, null, null, null, null, 'G2', null,
+  'D2', null, null, null, null, null, 'D2', null
+];
+const KICK = [
+  1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0,
+  1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0
+];
+const HIHAT = [
+  0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0,
+  0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0
+];
+
+class Chiptune {
+  constructor() {
+    this.ctx = null; this.master = null; this.melodyGain = null; this.bassGain = null; this.drumGain = null;
+    this.muted = false; this.playing = false; this.bpm = 96; this.step = 0; this.next = 0; this.timer = null;
+  }
+  init() {
+    if (this.ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AC();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = this.muted ? 0 : 0.22;
+    const lp = this.ctx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 6500; lp.Q.value = 0.4;
+    this.master.connect(lp); lp.connect(this.ctx.destination);
+    this.melodyGain = this.ctx.createGain(); this.melodyGain.gain.value = 0.16; this.melodyGain.connect(this.master);
+    this.bassGain = this.ctx.createGain(); this.bassGain.gain.value = 0.30; this.bassGain.connect(this.master);
+    this.drumGain = this.ctx.createGain(); this.drumGain.gain.value = 0.35; this.drumGain.connect(this.master);
+  }
+  start() {
+    this.init();
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    if (this.playing) return;
+    this.playing = true; this.step = 0;
+    this.next = this.ctx.currentTime + 0.08;
+    this.scheduler();
+  }
+  stop() { this.playing = false; if (this.timer) clearTimeout(this.timer); }
+  setMuted(m) {
+    this.muted = m;
+    if (this.master) this.master.gain.linearRampToValueAtTime(m ? 0 : 0.22, this.ctx.currentTime + 0.05);
+  }
+  scheduler() {
+    if (!this.playing) return;
+    const stepDur = 60 / this.bpm / 4;
+    while (this.next < this.ctx.currentTime + 0.12) {
+      this.playStep(this.step % MELODY.length, this.next, stepDur);
+      this.step++; this.next += stepDur;
+    }
+    this.timer = setTimeout(() => this.scheduler(), 25);
+  }
+  playStep(s, time, stepDur) {
+    if (MELODY[s] && NOTE[MELODY[s]]) this.square(NOTE[MELODY[s]], time, stepDur * 1.8, 0.15, this.melodyGain);
+    if (BASS[s] && NOTE[BASS[s]])     this.triangle(NOTE[BASS[s]], time, stepDur * 3.5, 0.30, this.bassGain);
+    if (KICK[s])                       this.kick(time);
+    if (HIHAT[s])                      this.hihat(time);
+  }
+  square(freq, time, dur, vol, dest) {
+    const o = this.ctx.createOscillator(); o.type = 'square'; o.frequency.value = freq;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0, time);
+    g.gain.linearRampToValueAtTime(vol, time + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.001, time + dur);
+    o.connect(g); g.connect(dest); o.start(time); o.stop(time + dur + 0.02);
+  }
+  triangle(freq, time, dur, vol, dest) {
+    const o = this.ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = freq;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0, time);
+    g.gain.linearRampToValueAtTime(vol, time + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.001, time + dur);
+    o.connect(g); g.connect(dest); o.start(time); o.stop(time + dur + 0.02);
+  }
+  kick(time) {
+    const o = this.ctx.createOscillator(); const g = this.ctx.createGain();
+    o.frequency.setValueAtTime(150, time);
+    o.frequency.exponentialRampToValueAtTime(40, time + 0.12);
+    g.gain.setValueAtTime(0.6, time);
+    g.gain.exponentialRampToValueAtTime(0.001, time + 0.18);
+    o.connect(g); g.connect(this.drumGain); o.start(time); o.stop(time + 0.2);
+  }
+  hihat(time) {
+    const bs = Math.floor(this.ctx.sampleRate * 0.04);
+    const buf = this.ctx.createBuffer(1, bs, this.ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < bs; i++) d[i] = (Math.random()*2 - 1) * 0.5;
+    const src = this.ctx.createBufferSource(); src.buffer = buf;
+    const filt = this.ctx.createBiquadFilter(); filt.type = 'highpass'; filt.frequency.value = 7500;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.12, time);
+    g.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
+    src.connect(filt); filt.connect(g); g.connect(this.drumGain);
+    src.start(time); src.stop(time + 0.06);
+  }
+  blip(freq, duration = 0.08) { if (!this.ctx) return; this.square(freq, this.ctx.currentTime, duration, 0.18, this.melodyGain); }
+  arpUp() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    ['C4','E4','G4','C5'].forEach((n, i) => this.square(NOTE[n], t + i*0.05, 0.1, 0.2, this.melodyGain));
+  }
+  arpDown() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    ['C5','A4','F#4','D4'].forEach((n, i) => this.square(NOTE[n], t + i*0.05, 0.1, 0.18, this.melodyGain));
+  }
+  fanfare() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    ['C5','E5','G5','C5','E5','G5','B5'].forEach((n, i) => this.square(NOTE[n], t + i*0.08, 0.18, 0.22, this.melodyGain));
+  }
+}
+const chip = new Chiptune();
+
+function toggleSound() {
+  const btn = document.getElementById('soundToggle');
+  if (!chip.ctx) { chip.init(); chip.start(); btn.classList.remove('muted'); btn.textContent = '♪'; return; }
+  chip.setMuted(!chip.muted);
+  if (chip.muted) { btn.classList.add('muted'); btn.textContent = '♪̸'; }
+  else { btn.classList.remove('muted'); btn.textContent = '♪'; }
+}
+
+/* ============================================================
+   GAME DATA
+============================================================ */
+const BASE_SEGMENTS = {
+  students: {
+    name: "Students", emoji: "🎒", size: 25, color: "#FBBF24",
+    desc: "Price sensitive, love WiFi/coworking, hang at universities.",
+    partworths: {
+      coffee:   { espresso: 5,  latte: 12, cappuccino: 8,  coldbrew: 18 },
+      location: { downtown: 5,  suburb: 8, mall: 6,        university: 28 },
+      extras:   { none: 0,      wifi: 28, music: 6,        coworking: 16 },
+    },
+    priceSensitivity: 5.5
+  },
+  business: {
+    name: "Business Pros", emoji: "💼", size: 25, color: "#60A5FA",
+    desc: "Premium tastes, downtown only, pays for quality.",
+    partworths: {
+      coffee:   { espresso: 26, latte: 10, cappuccino: 6,  coldbrew: 8 },
+      location: { downtown: 30, suburb: 5, mall: 8,        university: 0 },
+      extras:   { none: 8,      wifi: 16, music: 0,        coworking: 22 },
+    },
+    priceSensitivity: 1.0
+  },
+  tourists: {
+    name: "Tourists", emoji: "📸", size: 20, color: "#F472B6",
+    desc: "Want the experience — fancy lattes, music, central spots.",
+    partworths: {
+      coffee:   { espresso: 14, latte: 22, cappuccino: 26, coldbrew: 8 },
+      location: { downtown: 22, suburb: 4, mall: 28,       university: 2 },
+      extras:   { none: 0,      wifi: 8,  music: 26,       coworking: 0 },
+    },
+    priceSensitivity: 2.5
+  },
+  locals: {
+    name: "Parisian Locals", emoji: "🥐", size: 30, color: "#34D399",
+    desc: "Neighborhood regulars — moderate prices, suburbs, comfort.",
+    partworths: {
+      coffee:   { espresso: 16, latte: 18, cappuccino: 14, coldbrew: 10 },
+      location: { downtown: 14, suburb: 26, mall: 10,      university: 6 },
+      extras:   { none: 6,      wifi: 12, music: 12,       coworking: 4 },
+    },
+    priceSensitivity: 4.0
+  }
+};
+
+const ATTRIBUTES = {
+  coffee: { label: "Coffee Type",
+    options: {
+      espresso:   { name: "Espresso",   emoji: "☕", cost: 0.50 },
+      latte:      { name: "Latte",      emoji: "🥛", cost: 0.80 },
+      cappuccino: { name: "Cappuccino", emoji: "🍮", cost: 0.90 },
+      coldbrew:   { name: "Cold Brew",  emoji: "🧊", cost: 0.70 },
+    } },
+  location: { label: "Location",
+    options: {
+      downtown:   { name: "Downtown",   emoji: "🏙️", cost: 1.20 },
+      suburb:     { name: "Suburb",     emoji: "🏘️", cost: 0.40 },
+      mall:       { name: "Mall",       emoji: "🏬", cost: 0.90 },
+      university: { name: "University", emoji: "🎓", cost: 0.50 },
+    } },
+  extras: { label: "Extras",
+    options: {
+      none:       { name: "None",       emoji: "⚪", cost: 0.00 },
+      wifi:       { name: "WiFi+Power", emoji: "📶", cost: 0.25 },
+      music:      { name: "Live Music", emoji: "🎵", cost: 0.55 },
+      coworking:  { name: "Coworking",  emoji: "💻", cost: 0.75 },
+    } }
+};
+
+const PLAYER_COLOR = '#60A5FA';
+const RIVAL_COLORS = { roboCafe:'#F472B6', luxBrand:'#C084FC', budgetBean:'#FBBF24', trendCafe:'#34D399' };
+
+/* Per-option intel — shown below each attribute option */
+const OPTION_INTEL = {
+  coffee: {
+    espresso:   "Bold · Business fave",
+    latte:      "Versatile · broad appeal",
+    cappuccino: "Aesthetic · Tourist bait",
+    coldbrew:   "Trendy · Student magnet"
+  },
+  location: {
+    downtown:   "Pricey · Business + Tourist hub",
+    suburb:     "Cheap · Locals love it",
+    mall:       "Foot traffic · Tourist gold",
+    university: "Cheap · Student core"
+  },
+  extras: {
+    none:       "Zero cost · plain",
+    wifi:       "Productive · Students + Biz",
+    music:      "Vibe · Tourists love it",
+    coworking:  "Premium · Business class"
+  }
+};
+
+const AI_RIVALS = {
+  roboCafe: {
+    name: "RoboCafé", emoji: "🤖", color: RIVAL_COLORS.roboCafe,
+    strategy: aiRobo,
+    taunts: {
+      win:   ["Predictable as a linear model.", "Was that supposed to be a challenge?", "ERROR 404: your strategy not found.", "Compute > guesswork."],
+      lose:  ["A glitch in my parameters.", "Recalibrating...", "Your luck variable is suspicious."],
+      close: ["So close, yet so wrong.", "Within margin of error. Barely."]
+    }
+  },
+  luxBrand: {
+    name: "LuxBrand", emoji: "💎", color: RIVAL_COLORS.luxBrand,
+    strategy: aiLux,
+    taunts: {
+      win:   ["Plebs always lose to taste.", "Discount mindset, discount results.", "Pearls before swine, as expected."],
+      lose:  ["How utterly… unfortunate.", "The masses got lucky.", "Beneath me to acknowledge this."],
+      close: ["Style points to you. Still tacky.", "A momentary indulgence on my part."]
+    }
+  },
+  budgetBean: {
+    name: "BudgetBean", emoji: "🪙", color: RIVAL_COLORS.budgetBean,
+    strategy: aiBudget,
+    taunts: {
+      win:   ["Cheap and cheerful WINS!", "Race to the bottom — and I'm winning!", "MARKET SHARE, BABY!"],
+      lose:  ["I'll cut prices HARDER next time.", "I underestimated you. Won't happen again."],
+      close: ["Almost! Cutting another 50 cents.", "Tight race — victory through attrition."]
+    }
+  },
+  trendCafe: {
+    name: "TrendCafé", emoji: "🔥", color: RIVAL_COLORS.trendCafe,
+    strategy: aiTrend,
+    taunts: {
+      win:   ["The algorithm chose ME.", "Hashtag WINNING.", "Slay or pay — and I'm slaying."],
+      lose:  ["The trend betrayed me.", "Influencers LIED.", "Going viral with my L."],
+      close: ["Hashtag CLOSE.", "Caught lacking by 0.5%. Disrespectful."]
+    }
+  }
+};
+
+const MARKET_EVENTS = [
+  { name: "Paris Heatwave 38°C", emoji: "☀️", desc: "Everyone craves cold drinks. Cold Brew partworth surges across all segments.",
+    effect: (s) => { for (const x of Object.values(s)) x.partworths.coffee.coldbrew += 22; } },
+  { name: "Tech Conference in Town", emoji: "💻", desc: "Business Pros segment swells. Coworking spaces in high demand.",
+    effect: (s) => { s.business.size = 35; s.locals.size = 20; for (const x of Object.values(s)) x.partworths.extras.coworking += 12; } },
+  { name: "Influencer Goes Viral", emoji: "📸", desc: "A Parisian influencer raves about cappuccino aesthetics. Tourists swarm in.",
+    effect: (s) => { s.tourists.size = 30; s.locals.size = 20; for (const x of Object.values(s)) x.partworths.coffee.cappuccino += 15; } },
+  { name: "University Exam Week", emoji: "📚", desc: "Students need WiFi and coffee. Their segment grows, their loyalty intensifies.",
+    effect: (s) => { s.students.size = 35; s.business.size = 20; s.students.partworths.extras.wifi += 20; s.students.partworths.extras.coworking += 15; } },
+  { name: "Recession Hits", emoji: "📉", desc: "Everyone tightens budgets. Price sensitivity spikes across all segments.",
+    effect: (s) => { for (const x of Object.values(s)) x.priceSensitivity *= 1.8; } },
+  { name: "Fashion Week Madness", emoji: "👗", desc: "Downtown locations buzz. Premium extras (music) and lattes are in.",
+    effect: (s) => { for (const x of Object.values(s)) { x.partworths.location.downtown += 15; x.partworths.extras.music += 18; x.partworths.coffee.latte += 12; } } },
+  { name: "Rainy Season", emoji: "🌧️", desc: "Everyone stays indoors with WiFi and warm drinks. Cold Brew tanks.",
+    effect: (s) => { for (const x of Object.values(s)) { x.partworths.extras.wifi += 14; x.partworths.coffee.coldbrew -= 12; x.partworths.coffee.cappuccino += 10; } } },
+  { name: "Mega-Festival Weekend", emoji: "🎉", desc: "Tourists triple, locals flee. Mall + Music explode. Premium prices acceptable.",
+    effect: (s) => { s.tourists.size = 40; s.locals.size = 15; for (const x of Object.values(s)) { x.partworths.location.mall += 15; x.partworths.extras.music += 22; x.priceSensitivity *= 0.7; } } }
+];
+
+const LEVELS = [
+  { num: 1, title: "First Brew", rivals: ["roboCafe"], eventEnabled: false, tauntsEnabled: false,
+    sub: "Solo duel vs RoboCafé. Calm market. Learn the basics: pick attributes, set a price, deploy.",
+    unlocks: [ { em: "☕", t: "Design your first product" }, { em: "🎯", t: "Discover 4 hidden segments" } ],
+    mission: {
+      goal: "Out-profit RoboCafé in this single round.",
+      tactic: "You're flying blind. Pick attribute levels with <strong>broad appeal</strong> across multiple segments. Try moderate pricing (€4–5) to balance volume and margin.",
+      win: "WIN IF your round profit > RoboCafé's round profit"
+    } },
+  { num: 2, title: "Market Shocks", rivals: ["roboCafe"], eventEnabled: true, tauntsEnabled: true,
+    sub: "The market gets unpredictable. Random events shift segment preferences. RoboCafé starts taunting.",
+    unlocks: [ { em: "⚡", t: "Market events unlocked" }, { em: "💬", t: "AI taunts unlocked" } ],
+    mission: {
+      goal: "Adapt to the market event. Beat RoboCafé despite shifted preferences.",
+      tactic: "Read the <strong>event banner</strong> at the top — it tells you which attribute levels just got more valuable. Pick those. Watch for changes in price sensitivity too.",
+      win: "WIN IF your round profit > RoboCafé's round profit"
+    } },
+  { num: 3, title: "Enter LuxBrand", rivals: ["roboCafe", "luxBrand"], eventEnabled: true, tauntsEnabled: true,
+    sub: "A premium rival joins. LuxBrand always picks the high-end attributes. Downtown is now a war zone.",
+    unlocks: [ { em: "💎", t: "New rival: LuxBrand" }, { em: "🏙️", t: "Premium positioning matters" } ],
+    mission: {
+      goal: "Beat both RoboCafé AND LuxBrand. Don't fight LuxBrand head-on.",
+      tactic: "LuxBrand always picks espresso + downtown + premium pricing. <strong>Differentiate</strong> — own a different segment (Students at universities, Locals in suburbs) and avoid LuxBrand's lane.",
+      win: "WIN IF your round profit > both rivals' round profits"
+    } },
+  { num: 4, title: "BudgetBean Crashes", rivals: ["roboCafe", "luxBrand", "budgetBean"], eventEnabled: true, tauntsEnabled: true,
+    sub: "A budget brand enters. BudgetBean undercuts everyone. Margins shrink across the board.",
+    unlocks: [ { em: "🪙", t: "New rival: BudgetBean" }, { em: "💸", t: "Price wars intensify" } ],
+    mission: {
+      goal: "Out-profit all 3 rivals while keeping your margin > 40%.",
+      tactic: "BudgetBean kills the low end, LuxBrand owns premium. The middle is brutal. Aim for a <strong>defensible niche</strong> — high margin per cup is more important than chasing volume.",
+      win: "WIN IF your round profit > all 3 rivals' round profits"
+    } },
+  { num: 5, title: "Boss Fight · TrendCafé", rivals: ["roboCafe", "luxBrand", "budgetBean", "trendCafe"],
+    eventEnabled: true, tauntsEnabled: true, profitMultiplier: 2,
+    sub: "TrendCafé arrives and chases whatever the latest market event favors. Final round — profit doubled.",
+    unlocks: [ { em: "🔥", t: "Final boss: TrendCafé" }, { em: "💥", t: "Profit DOUBLED this round" }, { em: "🌪️", t: "Maximum chaos engaged" } ],
+    mission: {
+      goal: "Finish #1 OVERALL across all 5 levels (cumulative profit).",
+      tactic: "TrendCafé will exploit the active event — don't share its strategy. Look at your <strong>cumulative scores</strong> in the header: if you're behind, gamble big (this round is 2×). If you're ahead, defend your strongest segment.",
+      win: "WIN IF your cumulative profit is the highest of all 5 brands"
+    } }
+];
+
+/* ============================================================
+   LEARNING CONTENT — pre & post level
+============================================================ */
+const LEVEL_LEARNING = {
+  1: {
+    objectives: [
+      "Products as <strong>bundles of attribute levels</strong> (conjoint analysis)",
+      "How customers choose between alternatives (<strong>utility model</strong>)",
+      "Profit math: (price − cost) × demand"
+    ],
+    takeaway: {
+      headline: "Customers have hidden preferences for each attribute LEVEL — not the product as a whole.",
+      detail: "The same person who'd line up for your latte might walk past your cold brew. This is the core of conjoint analysis: decompose a product into attributes, estimate a <strong>partworth</strong> for each level, sum them up to predict choice.",
+      session: "Session 6 · Conjoint Analysis"
+    }
+  },
+  2: {
+    objectives: [
+      "Demand is <strong>dynamic</strong> — external shocks shift preferences",
+      "Why marketing teams refit demand models monthly",
+      "Reading market signals and adapting fast"
+    ],
+    takeaway: {
+      headline: "Partworths shift constantly in the real world.",
+      detail: "Heatwaves, recessions, viral trends — they all move customer preferences. This is why no demand model is 'set and forget'. The skill is detecting the shift in your scanner data and <strong>re-estimating fast</strong>.",
+      session: "Session 5 · Empirical Demand Analysis"
+    }
+  },
+  3: {
+    objectives: [
+      "<strong>Positioning maps</strong> reveal competitive distance",
+      "Differentiation reduces price competition",
+      "Niche vs head-to-head strategy"
+    ],
+    takeaway: {
+      headline: "Sitting close to a rival on the positioning map = price war = thin margins.",
+      detail: "Niches let you charge premium because no one else is there. <strong>Volvo owns 'Safety'</strong> not by being safest — but by being uncontested in that perception. The positioning map at the end of the game will show where every product sat.",
+      session: "Session 3 · Product Analytics & Positioning"
+    }
+  },
+  4: {
+    objectives: [
+      "<strong>Margin arithmetic</strong> for price changes",
+      "Cross-price elasticity & cannibalization",
+      "Why race-to-the-bottom rarely wins"
+    ],
+    takeaway: {
+      headline: "A 5% price cut at 25% margin needs ~25% volume gain just to break even.",
+      detail: "Small price cuts feel safe but are surprisingly costly — that's the <strong>margin arithmetic</strong>. BudgetBean wins on volume but its margins are nearly zero. Race-to-bottom only works with massive scale (Walmart, Aldi).",
+      session: "Session 4 · Demand Foundation"
+    }
+  },
+  5: {
+    objectives: [
+      "<strong>Multi-competitor demand modeling</strong>",
+      "Full marketing analytics stack: segment → position → conjoint → price",
+      "Where data ends and intuition begins"
+    ],
+    takeaway: {
+      headline: "Coca-Cola, Tesla, Netflix run exactly this loop — at massive scale.",
+      detail: "Segments × competitors × events × prices = combinatorial. Only data-driven approaches scale. But the biggest insight: <strong>data tells you WHAT, intuition tells you WHY</strong>. AI can't replace that judgment — that's why marketing analytics is still a great career.",
+      session: "All Sessions · The Big Picture"
+    }
+  }
+};
+
+const THINKING_LINES = [
+  "Rivals computing optimal strategies",
+  "RoboCafé reticulating splines",
+  "LuxBrand polishing the silverware",
+  "BudgetBean counting pennies",
+  "TrendCafé checking TikTok"
+];
+
+/* ============================================================
+   LEADERBOARD — seeded "past players" + localStorage saves
+============================================================ */
+const LEADERBOARD_SEED = [
+  { name: "Marie L.",   level: [220, 280, 365, 455, 720] },
+  { name: "Diego R.",   level: [200, 260, 340, 430, 680] },
+  { name: "Saanvi P.",  level: [190, 245, 325, 415, 650] },
+  { name: "Yuki S.",    level: [175, 230, 305, 395, 620] },
+  { name: "Aisha B.",   level: [165, 215, 290, 380, 595] },
+  { name: "Tom K.",     level: [155, 200, 275, 360, 565] },
+  { name: "Chen W.",    level: [145, 185, 260, 345, 540] },
+  { name: "Sofia M.",   level: [135, 175, 245, 325, 515] },
+  { name: "Pierre G.",  level: [125, 165, 230, 310, 490] },
+  { name: "Liam O.",    level: [120, 155, 215, 295, 465] },
+  { name: "Mei L.",     level: [110, 145, 205, 280, 445] },
+  { name: "Lucas D.",   level: [100, 135, 190, 265, 420] },
+  { name: "Hana K.",    level: [ 95, 125, 180, 250, 400] },
+  { name: "Omar S.",    level: [ 85, 115, 165, 235, 380] },
+  { name: "Anya V.",    level: [ 75, 105, 155, 220, 360] },
+  { name: "Noah A.",    level: [ 70,  95, 140, 205, 340] },
+  { name: "Zara T.",    level: [ 60,  85, 130, 190, 320] },
+  { name: "Felipe B.",  level: [ 55,  75, 115, 175, 300] },
+  { name: "Ines C.",    level: [ 45,  65, 105, 160, 280] },
+  { name: "Raj M.",     level: [ 40,  55,  90, 145, 255] },
+];
+
+/* ============================================================
+   STATE
+============================================================ */
+let state;
+function newState() {
+  return {
+    round: 1, maxRounds: 5,
+    playerProfit: 0,
+    rivalProfit: { roboCafe: 0, luxBrand: 0, budgetBean: 0, trendCafe: 0 },
+    history: [],
+    playerSelection: { coffee: null, location: null, extras: null, price: 4 },
+    currentEvent: null, activeSegments: null,
+    segmentCaptures: {
+      students: { player:0, roboCafe:0, luxBrand:0, budgetBean:0, trendCafe:0, nobuy:0 },
+      business: { player:0, roboCafe:0, luxBrand:0, budgetBean:0, trendCafe:0, nobuy:0 },
+      tourists: { player:0, roboCafe:0, luxBrand:0, budgetBean:0, trendCafe:0, nobuy:0 },
+      locals:   { player:0, roboCafe:0, luxBrand:0, budgetBean:0, trendCafe:0, nobuy:0 },
+    }
+  };
+}
+function getLevel() { return LEVELS[state.round - 1]; }
+function getColorFor(slot) { return slot === 'player' ? PLAYER_COLOR : RIVAL_COLORS[slot]; }
+
+/* ============================================================
+   TYPEWRITER
+============================================================ */
+function typewriter(el, text, speed = 40, onDone) {
+  el.innerHTML = '';
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  el.appendChild(cursor);
+  const tick = () => {
+    if (i < text.length) {
+      cursor.insertAdjacentText('beforebegin', text[i++]);
+      setTimeout(tick, speed);
+    } else {
+      setTimeout(() => cursor.remove(), 400);
+      if (onDone) onDone();
+    }
+  };
+  tick();
+}
+
+/* ============================================================
+   FLOW
+============================================================ */
+function startGame() {
+  state = newState();
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  try { chip.start(); chip.arpUp(); } catch(e) {}
+  showLevelIntro();
+}
+
+function showLevelIntro() {
+  const lvl = getLevel();
+  const learning = LEVEL_LEARNING[lvl.num];
+  document.getElementById('lvlNum').textContent = `LEVEL ${String(lvl.num).padStart(2,'0')} OF 05`;
+  document.getElementById('lvlSub').textContent = lvl.sub;
+
+  // Objectives
+  const list = document.getElementById('objectivesList');
+  list.innerHTML = '';
+  learning.objectives.forEach((obj, i) => {
+    const row = document.createElement('div');
+    row.className = 'objective-row';
+    row.innerHTML = `<div class="obj-check">${i+1}</div><div>${obj}</div>`;
+    list.appendChild(row);
+  });
+
+  // Mission
+  document.getElementById('missionLvlNum').textContent = lvl.num;
+  document.getElementById('missionGoal').innerHTML = `<span>${lvl.mission.goal}</span>`;
+  document.getElementById('missionTactic').innerHTML = lvl.mission.tactic;
+  document.getElementById('missionWin').innerHTML = `<strong>${lvl.mission.win}</strong>`;
+
+  // Unlocks
+  const unlocks = document.getElementById('lvlUnlocks');
+  unlocks.innerHTML = '';
+  lvl.unlocks.forEach((u) => {
+    const el = document.createElement('div');
+    el.className = 'lvl-unlock';
+    el.innerHTML = `<span class="em">${u.em}</span><span>${u.t}</span>`;
+    unlocks.appendChild(el);
+  });
+
+  document.getElementById('levelOverlay').classList.add('show');
+  // typewriter on title
+  setTimeout(() => typewriter(document.getElementById('lvlTitle'), lvl.title, 50), 250);
+}
+
+function dismissLevelIntro() {
+  document.getElementById('levelOverlay').classList.remove('show');
+  try { chip.arpUp(); } catch(e) {}
+  setupRound();
+}
+
+function setupRound() {
+  const lvl = getLevel();
+  document.getElementById('roundBadge').textContent = `LEVEL ${String(lvl.num).padStart(2,'0')} / 05`;
+  const dp = document.getElementById('designPhase');
+  dp.classList.remove('hidden');
+  dp.classList.remove('phase-enter');
+  void dp.offsetWidth;
+  dp.classList.add('phase-enter');
+  document.getElementById('resultsPhase').classList.add('hidden');
+  document.getElementById('aiThinking').classList.add('hidden');
+
+  // Event
+  state.currentEvent = null;
+  state.activeSegments = JSON.parse(JSON.stringify(BASE_SEGMENTS));
+  const banner = document.getElementById('eventBanner');
+  if (lvl.eventEnabled) {
+    const ev = MARKET_EVENTS[Math.floor(Math.random()*MARKET_EVENTS.length)];
+    state.currentEvent = ev;
+    ev.effect(state.activeSegments);
+    banner.classList.remove('hidden');
+    banner.innerHTML = `
+      <div class="event-emoji">${ev.emoji}</div>
+      <div class="event-info">
+        <div class="label">Market Event</div>
+        <div class="name">${ev.name}</div>
+        <div class="desc">${ev.desc}</div>
+      </div>`;
+  } else {
+    banner.classList.add('hidden');
+  }
+
+  // Rival lineup
+  const lineup = document.getElementById('rivalLineup');
+  lineup.innerHTML = `<div class="rival-chip" style="border-color:${PLAYER_COLOR}66"><span class="em">☕</span><span class="nm" style="color:${PLAYER_COLOR}">Café Lumière · YOU</span></div>`;
+  for (const rk of lvl.rivals) {
+    const r = AI_RIVALS[rk];
+    lineup.innerHTML += `<div class="rival-chip" style="border-color:${r.color}55"><span class="em">${r.emoji}</span><span class="nm" style="color:${r.color}">${r.name}</span></div>`;
+  }
+
+  renderScoreRow();
+  document.getElementById('briefing').innerHTML = `
+    <div class="briefing-title">🎯 Level ${lvl.num} mission</div>
+    <div class="briefing-mission">
+      <div class="goal"><span>${lvl.mission.goal}</span></div>
+      <div class="tactic">${lvl.mission.tactic}</div>
+    </div>`;
+  renderAttrs();
+  state.playerSelection = { coffee: null, location: null, extras: null, price: 4 };
+  document.getElementById('priceSlider').value = 4;
+  updatePrice();
+  updateDeployButton();
+}
+
+function renderScoreRow() {
+  const lvl = getLevel();
+  const row = document.getElementById('scoreRow');
+  row.innerHTML = `<div class="score-block"><div class="label">☕ You</div><div class="value" id="playerScore" style="color:${PLAYER_COLOR}">€${Math.round(state.playerProfit)}</div></div>`;
+  for (const rk of lvl.rivals) {
+    const r = AI_RIVALS[rk];
+    row.innerHTML += `<div class="score-block"><div class="label">${r.emoji} ${r.name}</div><div class="value" id="score_${rk}" style="color:${r.color}">€${Math.round(state.rivalProfit[rk])}</div></div>`;
+  }
+}
+
+function renderAttrs() {
+  const grid = document.getElementById('attrsGrid');
+  grid.innerHTML = '';
+  for (const [attrKey, attr] of Object.entries(ATTRIBUTES)) {
+    const card = document.createElement('div');
+    card.className = 'attr-card';
+    card.innerHTML = `<div class="attr-title">${attr.label}</div>
+      <div class="attr-options">
+        ${Object.entries(attr.options).map(([k,o]) => `
+          <div class="opt" data-attr="${attrKey}" data-key="${k}" onclick="selectOpt('${attrKey}','${k}', event)">
+            <span class="emoji">${o.emoji}</span>${o.name}
+            <span class="hint">${OPTION_INTEL[attrKey][k]}</span>
+          </div>`).join('')}
+      </div>`;
+    grid.appendChild(card);
+  }
+}
+
+function selectOpt(attrKey, key, ev) {
+  state.playerSelection[attrKey] = key;
+  document.querySelectorAll(`.opt[data-attr="${attrKey}"]`).forEach(el => el.classList.remove('selected'));
+  const target = document.querySelector(`.opt[data-attr="${attrKey}"][data-key="${key}"]`);
+  target.classList.add('selected');
+  updateDeployButton();
+  updateCostReadout();
+  renderInsightPanel();
+  try { chip.blip(660, 0.05); } catch(e) {}
+  if (ev) emojiBurst(ev.clientX, ev.clientY, ATTRIBUTES[attrKey].options[key].emoji);
+}
+
+function emojiBurst(x, y, emoji) {
+  const b = document.createElement('div');
+  b.className = 'burst';
+  b.textContent = emoji;
+  b.style.left = x + 'px';
+  b.style.top = y + 'px';
+  b.style.setProperty('--dx', ((Math.random()-0.5) * 80) + 'px');
+  document.body.appendChild(b);
+  setTimeout(() => b.remove(), 1600);
+}
+
+function updatePrice() {
+  const slider = document.getElementById('priceSlider');
+  const v = parseFloat(slider.value);
+  state.playerSelection.price = v;
+  const disp = document.getElementById('priceDisplay');
+  disp.textContent = `€${v.toFixed(2)}`;
+  disp.classList.remove('bumped');
+  void disp.offsetWidth;
+  disp.classList.add('bumped');
+  const p = ((v - 2) / 6) * 100;
+  slider.style.setProperty('--p', p + '%');
+  updateCostReadout();
+  if (state.activeSegments) renderInsightPanel();
+}
+
+function getCost(sel) {
+  let c = 0;
+  if (sel.coffee)   c += ATTRIBUTES.coffee.options[sel.coffee].cost;
+  if (sel.location) c += ATTRIBUTES.location.options[sel.location].cost;
+  if (sel.extras)   c += ATTRIBUTES.extras.options[sel.extras].cost;
+  return c;
+}
+
+function updateCostReadout() {
+  const sel = state.playerSelection;
+  const cost = getCost(sel);
+  const margin = sel.price > 0 ? ((sel.price - cost) / sel.price * 100) : 0;
+  document.getElementById('costReadout').innerHTML =
+    `Unit cost <span>€${cost.toFixed(2)}</span> · Margin <span>${margin.toFixed(0)}%</span> · Profit/cup <span>€${(sel.price - cost).toFixed(2)}</span>`;
+}
+
+function updateDeployButton() {
+  const s = state.playerSelection;
+  document.getElementById('deployBtn').disabled = !(s.coffee && s.location && s.extras);
+}
+
+/* ============================================================
+   LIVE INSIGHT PANEL — explains what each selection does
+============================================================ */
+function computePartialAppeal(selection) {
+  const SCALE = 0.20;
+  const OUTSIDE_U = 5;
+  const result = {};
+  for (const [segKey, seg] of Object.entries(state.activeSegments)) {
+    let u = 0;
+    if (selection.coffee)   u += seg.partworths.coffee[selection.coffee];
+    if (selection.location) u += seg.partworths.location[selection.location];
+    if (selection.extras)   u += seg.partworths.extras[selection.extras];
+    u -= seg.priceSensitivity * selection.price;
+    const expU = Math.exp(u * SCALE);
+    const expO = Math.exp(OUTSIDE_U * SCALE);
+    result[segKey] = (expU / (expU + expO)) * 100;
+  }
+  return result;
+}
+
+function renderInsightPanel() {
+  const sel = state.playerSelection;
+  const completed = (sel.coffee?1:0) + (sel.location?1:0) + (sel.extras?1:0);
+
+  // Progress bar + steps
+  document.getElementById('progressCount').textContent = completed;
+  document.getElementById('progressFill').style.width = (completed / 3 * 100) + '%';
+  const setStep = (id, val, num) => {
+    const el = document.getElementById(id);
+    el.classList.toggle('done', !!val);
+    el.textContent = val ? '✓' : num;
+  };
+  setStep('step-coffee', sel.coffee, '1');
+  setStep('step-location', sel.location, '2');
+  setStep('step-extras', sel.extras, '3');
+
+  // Product preview items
+  const previewItems = document.getElementById('previewItems');
+  const slots = [
+    { key: 'coffee',   label: 'Coffee?'   },
+    { key: 'location', label: 'Location?' },
+    { key: 'extras',   label: 'Extras?'   }
+  ];
+  const items = slots.map((s, i) => {
+    if (sel[s.key]) {
+      const opt = ATTRIBUTES[s.key].options[sel[s.key]];
+      return `<span class="preview-item"><span class="em">${opt.emoji}</span>${opt.name}</span>`;
+    }
+    return `<span class="preview-item blank">${s.label}</span>`;
+  });
+  // Add price item
+  items.push(`<span class="preview-item"><span class="em">💰</span>€${sel.price.toFixed(2)}</span>`);
+  previewItems.innerHTML = items.join('<span class="preview-sep">·</span>');
+
+  // Econ readout
+  const cost = getCost(sel);
+  const margin = sel.price > 0 ? ((sel.price - cost) / sel.price * 100) : 0;
+  document.getElementById('previewEcon').innerHTML =
+    `Unit cost <span>€${cost.toFixed(2)}</span> · Margin <span>${margin.toFixed(0)}%</span> · Profit/cup <span>€${(sel.price - cost).toFixed(2)}</span>`;
+
+  // Appeal bars
+  const appeal = computePartialAppeal(sel);
+  const sorted = Object.entries(appeal).sort((a, b) => b[1] - a[1]);
+  const topSeg = sorted[0][0];
+  const bars = document.getElementById('appealBars');
+  bars.innerHTML = '';
+  // Render in fixed order: students, business, tourists, locals
+  for (const segKey of ['students', 'business', 'tourists', 'locals']) {
+    const seg = BASE_SEGMENTS[segKey];
+    const score = appeal[segKey];
+    const isTop = segKey === topSeg && completed > 0;
+    bars.innerHTML += `
+      <div class="appeal-row ${isTop ? 'top' : ''}">
+        <span class="appeal-seg" style="color:${seg.color}">${seg.emoji} ${seg.name}</span>
+        <div class="appeal-bar-track">
+          <div class="appeal-bar-fill" style="width:${score.toFixed(0)}%;background:${seg.color}"></div>
+        </div>
+        <span class="appeal-score" style="color:${seg.color}">${score.toFixed(0)}%</span>
+      </div>`;
+  }
+
+  // Smart hint — different message based on state
+  const hint = document.getElementById('smartHint');
+  if (completed === 0) {
+    hint.innerHTML = `<span class="em-large">👋</span>Start by picking a <strong>coffee type</strong>. Each choice shifts who'll buy — watch the appeal bars update in real-time.`;
+  } else if (completed < 3) {
+    const missing = [];
+    if (!sel.coffee) missing.push('☕ coffee');
+    if (!sel.location) missing.push('📍 location');
+    if (!sel.extras) missing.push('✨ extras');
+    hint.innerHTML = `<span class="em-large">➡️</span>Now pick <strong>${missing.join(' and ')}</strong>. Currently leaning toward <strong>${BASE_SEGMENTS[topSeg].name}</strong> (${sorted[0][1].toFixed(0)}% appeal).`;
+  } else {
+    // All 3 selected
+    const best = sorted[0];
+    const worst = sorted[3];
+    const second = sorted[1];
+    let msg = `<span class="em-large">🎯</span><strong>${BASE_SEGMENTS[best[0]].name}</strong> (${best[1].toFixed(0)}%) are your best bet`;
+    if (second[1] > 40) msg += `, with <strong>${BASE_SEGMENTS[second[0]].name}</strong> (${second[1].toFixed(0)}%) as a secondary target`;
+    msg += `. `;
+    if (worst[1] < 15) msg += `<strong>${BASE_SEGMENTS[worst[0]].name}</strong> will mostly skip you (${worst[1].toFixed(0)}%). `;
+    if (margin < 35) msg += `<strong>Tight margin (${margin.toFixed(0)}%)</strong> — you'll need volume to profit.`;
+    else if (margin > 65) msg += `Strong margin (${margin.toFixed(0)}%) — each cup pays off.`;
+    else msg += `Margin looks healthy (${margin.toFixed(0)}%).`;
+    hint.innerHTML = msg;
+  }
+
+  // Status
+  const status = document.getElementById('insightStatus');
+  if (completed === 3) {
+    status.textContent = `Ready to deploy · top appeal ${sorted[0][1].toFixed(0)}%`;
+    status.classList.add('ready');
+  } else {
+    status.textContent = `${completed}/3 attributes set`;
+    status.classList.remove('ready');
+  }
+}
+
+/* ============================================================
+   AI STRATEGIES
+============================================================ */
+function pickKey(obj) { const ks = Object.keys(obj); return ks[Math.floor(Math.random()*ks.length)]; }
+
+function aiRobo(player) {
+  let best = null, bestProf = -Infinity;
+  for (let i = 0; i < 60; i++) {
+    const cand = {
+      coffee: pickKey(ATTRIBUTES.coffee.options),
+      location: pickKey(ATTRIBUTES.location.options),
+      extras: pickKey(ATTRIBUTES.extras.options),
+      price: 2 + Math.random()*6
+    };
+    const result = simulateProducts({ player, robo: cand });
+    if (result.profits.robo > bestProf) { bestProf = result.profits.robo; best = cand; }
+  }
+  if (state && state.round > 2 && Math.random() < 0.4) {
+    const counterOpts = (k) => Object.keys(ATTRIBUTES[k].options).filter(o => o !== player[k]);
+    best.coffee = counterOpts('coffee')[0] || best.coffee;
+  }
+  return best;
+}
+function aiLux(player) {
+  return { coffee: 'espresso', location: 'downtown',
+    extras: Math.random() < 0.5 ? 'coworking' : 'music',
+    price: 6 + Math.random()*2 };
+}
+function aiBudget(player) {
+  return { coffee: Math.random() < 0.5 ? 'coldbrew' : 'espresso',
+    location: Math.random() < 0.7 ? 'suburb' : 'university',
+    extras: 'none', price: 2 + Math.random()*1.5 };
+}
+function aiTrend(player) {
+  const segs = state.activeSegments;
+  const pickByEvent = (attr) => {
+    const opts = Object.keys(ATTRIBUTES[attr].options);
+    let bestK = opts[0], bestV = -Infinity;
+    for (const o of opts) {
+      let avg = 0;
+      for (const s of Object.values(segs)) avg += s.partworths[attr][o] * (s.size/100);
+      if (avg > bestV) { bestV = avg; bestK = o; }
+    }
+    return bestK;
+  };
+  return { coffee: pickByEvent('coffee'), location: pickByEvent('location'),
+    extras: pickByEvent('extras'), price: 3.5 + Math.random()*2 };
+}
+
+/* ============================================================
+   SIMULATION
+============================================================ */
+function utility(product, seg) {
+  let u = 0;
+  u += seg.partworths.coffee[product.coffee];
+  u += seg.partworths.location[product.location];
+  u += seg.partworths.extras[product.extras];
+  u -= seg.priceSensitivity * product.price;
+  return u;
+}
+
+function simulateProducts(products) {
+  const SCALE = 0.20;
+  const OUTSIDE_U = 5;
+  const slotNames = Object.keys(products);
+  const profits = {};
+  const customers = {};
+  const bySegment = {};
+  for (const sn of slotNames) { profits[sn] = 0; customers[sn] = 0; }
+  let noBuy = 0;
+  const choices = [];
+  for (const [segKey, seg] of Object.entries(state.activeSegments)) {
+    const us = slotNames.map(sn => utility(products[sn], seg));
+    const exps = us.map(u => Math.exp(u * SCALE));
+    const expO = Math.exp(OUTSIDE_U * SCALE);
+    const denom = exps.reduce((a,b)=>a+b,0) + expO;
+    const ns = exps.map(e => Math.round(seg.size * (e / denom)));
+    let nO = seg.size - ns.reduce((a,b)=>a+b,0);
+    if (nO < 0) nO = 0;
+    noBuy += nO;
+    bySegment[segKey] = {};
+    slotNames.forEach((sn, i) => {
+      customers[sn] += ns[i];
+      bySegment[segKey][sn] = ns[i];
+      for (let k = 0; k < ns[i]; k++) choices.push({ seg: segKey, pick: sn });
+    });
+    bySegment[segKey].nobuy = nO;
+    for (let k = 0; k < nO; k++) choices.push({ seg: segKey, pick: 'nobuy' });
+  }
+  for (const sn of slotNames) {
+    const p = products[sn];
+    const cost = getCost(p);
+    profits[sn] = (p.price - cost) * customers[sn];
+  }
+  return { profits, customers, bySegment, choices, noBuy };
+}
+
+/* ============================================================
+   DEPLOY
+============================================================ */
+function deploy() {
+  const lvl = getLevel();
+  document.getElementById('designPhase').classList.add('hidden');
+  const at = document.getElementById('aiThinking');
+  at.classList.remove('hidden');
+  document.getElementById('thinkingText').textContent = THINKING_LINES[Math.min(lvl.num, THINKING_LINES.length) - 1];
+  try { chip.arpUp(); } catch(e) {}
+
+  setTimeout(() => {
+    const products = { player: { ...state.playerSelection } };
+    for (const rk of lvl.rivals) {
+      products[rk] = AI_RIVALS[rk].strategy(state.playerSelection);
+    }
+    const sim = simulateProducts(products);
+    const mult = lvl.profitMultiplier || 1;
+    state.playerProfit += sim.profits.player * mult;
+    for (const rk of lvl.rivals) state.rivalProfit[rk] += sim.profits[rk] * mult;
+    for (const [segKey, caps] of Object.entries(sim.bySegment)) {
+      state.segmentCaptures[segKey].player += caps.player || 0;
+      for (const rk of lvl.rivals) state.segmentCaptures[segKey][rk] += caps[rk] || 0;
+      state.segmentCaptures[segKey].nobuy += caps.nobuy || 0;
+    }
+    state.history.push({ round: state.round, level: lvl, event: state.currentEvent, products, sim, mult });
+    showResults(products, sim, lvl);
+  }, 1400);
+}
+
+function showResults(products, sim, lvl) {
+  document.getElementById('aiThinking').classList.add('hidden');
+  const rp = document.getElementById('resultsPhase');
+  rp.classList.remove('hidden');
+  rp.classList.remove('phase-enter');
+  void rp.offsetWidth;
+  rp.classList.add('phase-enter');
+
+  // Taunts
+  const tauntsBox = document.getElementById('tauntsBox');
+  tauntsBox.innerHTML = '';
+  if (lvl.tauntsEnabled) {
+    for (const rk of lvl.rivals) {
+      const r = AI_RIVALS[rk];
+      const rivalProfit = sim.profits[rk];
+      const playerProfit = sim.profits.player;
+      let tauntPool;
+      if (rivalProfit > playerProfit * 1.3) tauntPool = r.taunts.win;
+      else if (playerProfit > rivalProfit * 1.3) tauntPool = r.taunts.lose;
+      else tauntPool = r.taunts.close;
+      const taunt = tauntPool[Math.floor(Math.random()*tauntPool.length)];
+      const div = document.createElement('div');
+      div.className = 'taunt';
+      div.style.animationDelay = (lvl.rivals.indexOf(rk) * 0.18) + 's';
+      div.innerHTML = `
+        <div class="avatar">${r.emoji}</div>
+        <div class="bubble">
+          <div class="who" style="color:${r.color}">${r.name}</div>
+          <div class="msg">${taunt}</div>
+        </div>`;
+      tauntsBox.appendChild(div);
+    }
+  }
+
+  // Product cards
+  const cards = document.getElementById('resultsCards');
+  cards.innerHTML = '';
+  const slots = Object.keys(products);
+  for (const sn of slots) {
+    const p = products[sn];
+    const cost = getCost(p);
+    const margin = (p.price - cost) / p.price;
+    const color = getColorFor(sn);
+    const label = sn === 'player' ? '☕ CAFÉ LUMIÈRE · YOU' : `${AI_RIVALS[sn].emoji} ${AI_RIVALS[sn].name.toUpperCase()}`;
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.style.borderLeftColor = color;
+    card.innerHTML = `
+      <div class="who" style="color:${color}">${label}</div>
+      <div class="product-lines">
+        <div class="line"><span>Coffee</span><span>${ATTRIBUTES.coffee.options[p.coffee].emoji} ${ATTRIBUTES.coffee.options[p.coffee].name}</span></div>
+        <div class="line"><span>Location</span><span>${ATTRIBUTES.location.options[p.location].emoji} ${ATTRIBUTES.location.options[p.location].name}</span></div>
+        <div class="line"><span>Extras</span><span>${ATTRIBUTES.extras.options[p.extras].emoji} ${ATTRIBUTES.extras.options[p.extras].name}</span></div>
+        <div class="line"><span>Price</span><span>€${p.price.toFixed(2)}</span></div>
+        <div class="line"><span>Margin</span><span>${(margin*100).toFixed(0)}%</span></div>
+      </div>
+      <div class="product-stats">
+        <div><span class="v" id="stat_${sn}_c" style="color:${color}">0</span><span class="k">cust</span></div>
+        <div><span class="v" id="stat_${sn}_s">0%</span><span class="k">share</span></div>
+        <div><span class="v" id="stat_${sn}_p" style="color:${color}">€0</span><span class="k">profit</span></div>
+      </div>`;
+    cards.appendChild(card);
+  }
+  for (const sn of slots) {
+    animateNumber(`stat_${sn}_c`, 0, sim.customers[sn], 900, n => Math.round(n));
+    animateNumber(`stat_${sn}_s`, 0, sim.customers[sn], 900, n => Math.round(n) + '%');
+    animateNumber(`stat_${sn}_p`, 0, sim.profits[sn] * (lvl.profitMultiplier || 1), 1100, n => '€' + Math.round(n));
+  }
+
+  bumpScore('playerScore', state.playerProfit - sim.profits.player * (lvl.profitMultiplier || 1), state.playerProfit);
+  for (const rk of lvl.rivals) {
+    bumpScore(`score_${rk}`, state.rivalProfit[rk] - sim.profits[rk] * (lvl.profitMultiplier || 1), state.rivalProfit[rk]);
+  }
+
+  // Market grid
+  const grid = document.getElementById('marketGrid');
+  grid.innerHTML = '';
+  const shuffled = [...sim.choices].sort(() => Math.random() - 0.5);
+  const cells = [];
+  for (let i = 0; i < 100; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cust';
+    grid.appendChild(cell);
+    cells.push(cell);
+  }
+  for (let i = 0; i < 100; i++) {
+    const c = shuffled[i];
+    const cell = cells[i];
+    setTimeout(() => {
+      cell.classList.add('set');
+      cell.style.background = c.pick === 'nobuy' ? 'rgba(255,255,255,0.08)' : getColorFor(c.pick);
+    }, 12 * i + 150);
+  }
+
+  const legend = document.getElementById('marketLegend');
+  legend.innerHTML = `<span><span class="leg-dot" style="background:${PLAYER_COLOR}"></span>You</span>`;
+  for (const rk of lvl.rivals) {
+    legend.innerHTML += `<span><span class="leg-dot" style="background:${RIVAL_COLORS[rk]}"></span>${AI_RIVALS[rk].name}</span>`;
+  }
+  legend.innerHTML += `<span><span class="leg-dot" style="background:rgba(255,255,255,0.15)"></span>No buy</span>`;
+
+  // KEY TAKEAWAY
+  const learning = LEVEL_LEARNING[lvl.num];
+  document.getElementById('takeawayLvlNum').textContent = lvl.num;
+  document.getElementById('takeawayHeadline').textContent = learning.takeaway.headline;
+  document.getElementById('takeawayDetail').innerHTML = learning.takeaway.detail;
+  document.getElementById('takeawaySession').textContent = '📖 ' + learning.takeaway.session;
+
+  document.getElementById('nextBtn').textContent = state.round === state.maxRounds ? 'See final results  →' : `Next level →`;
+
+  // SFX
+  const playerWon = sim.profits.player >= Math.max(...lvl.rivals.map(rk => sim.profits[rk]));
+  try {
+    if (playerWon) { chip.fanfare(); fireConfetti(); }
+    else { chip.arpDown(); }
+  } catch(e) {}
+}
+
+function bumpScore(id, from, to) {
+  animateNumber(id, from, to, 1100, n => '€' + Math.round(n));
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('bumped');
+  void el.offsetWidth;
+  el.classList.add('bumped');
+}
+
+function animateNumber(id, from, to, duration, formatter) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const val = from + (to - from) * eased;
+    el.textContent = formatter(val);
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function fireConfetti() {
+  const colors = [PLAYER_COLOR, '#7DD3FC', '#A78BFA', '#34D399', '#F472B6', '#FBBF24'];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration = (2 + Math.random()*2) + 's';
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+function nextRound() {
+  if (state.round >= state.maxRounds) { showFinal(); return; }
+  state.round++;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showLevelIntro();
+}
+
+/* ============================================================
+   LEADERBOARD FUNCTIONS
+   - Fetches from /api/scores when the server is available
+   - Falls back to localStorage when running offline (file://)
+============================================================ */
+const LB_STORAGE_KEY = 'brandBattle_leaderboard';
+const LB_NAME_KEY = 'brandBattle_lastName';
+
+let apiScores = [];
+let apiAvailable = true; // optimistic; flips false on first failure
+
+async function fetchScoresFromAPI() {
+  try {
+    const res = await fetch('/api/scores', { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('http ' + res.status);
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('bad payload');
+    apiScores = data;
+    apiAvailable = true;
+  } catch (e) {
+    apiAvailable = false;
+    try { apiScores = JSON.parse(localStorage.getItem(LB_STORAGE_KEY) || '[]'); }
+    catch(_) { apiScores = []; }
+  }
+}
+
+function loadSavedScores() {
+  return apiScores;
+}
+
+async function saveLeaderboard() {
+  const input = document.getElementById('lbNameInput');
+  const name = (input.value.trim() || 'Player').slice(0, 20);
+  const perLevel = state.history.map(h => h.sim.profits.player * (h.mult || 1));
+  while (perLevel.length < 5) perLevel.push(0);
+
+  const saveBtn = document.getElementById('lbSaveBtn');
+  const original = saveBtn.textContent;
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving…';
+
+  let serverOk = false;
+  if (apiAvailable) {
+    try {
+      const res = await fetch('/api/scores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, level: perLevel })
+      });
+      if (!res.ok) throw new Error('http ' + res.status);
+      apiScores = await res.json();
+      serverOk = true;
+    } catch (e) {
+      apiAvailable = false;
+    }
+  }
+  if (!serverOk) {
+    apiScores = [...apiScores, { name, level: perLevel }];
+    try { localStorage.setItem(LB_STORAGE_KEY, JSON.stringify(apiScores)); } catch(_) {}
+  }
+  try { localStorage.setItem(LB_NAME_KEY, name); } catch(_) {}
+
+  saveBtn.disabled = false;
+  saveBtn.textContent = original;
+
+  document.getElementById('lbNameEntry').style.display = 'none';
+  const msg = document.getElementById('lbSavedMsg');
+  msg.classList.add('show');
+  msg.textContent = serverOk
+    ? `✓ Saved as "${name}" — added to the global leaderboard`
+    : `✓ Saved as "${name}" — local only (server unavailable)`;
+
+  try { chip.fanfare(); } catch(e) {}
+  fireConfetti();
+
+  renderLeaderboard({ name, level: perLevel, isYou: true, saved: true });
+}
+
+function renderLeaderboard(currentEntry) {
+  const savedEntries = loadSavedScores().map(e => ({ ...e, isYou: false, isSavedPlayer: true }));
+  const seedEntries = LEADERBOARD_SEED.map(e => ({ ...e, isYou: false }));
+
+  let all = [...seedEntries, ...savedEntries];
+  if (currentEntry && !currentEntry.saved) {
+    all.push(currentEntry);
+  } else if (currentEntry && currentEntry.saved) {
+    // mark the most recent saved entry as "you"
+    for (let i = all.length - 1; i >= 0; i--) {
+      if (all[i].isSavedPlayer && all[i].name === currentEntry.name &&
+          JSON.stringify(all[i].level) === JSON.stringify(currentEntry.level)) {
+        all[i].isYou = true;
+        break;
+      }
+    }
+  }
+
+  all.forEach(e => e.total = e.level.reduce((a,b) => a + b, 0));
+  all.sort((a, b) => b.total - a.total);
+
+  const playerIdx = all.findIndex(e => e.isYou);
+  const playerRank = playerIdx + 1;
+  const totalPlayers = all.length;
+  const percentile = playerRank > 0 ? Math.round((1 - (playerRank - 1) / totalPlayers) * 100) : 0;
+
+  // Position badge
+  const badge = document.getElementById('lbPosBadge');
+  if (currentEntry && playerRank > 0) {
+    let medal = '';
+    if (playerRank === 1) medal = '🥇 ';
+    else if (playerRank === 2) medal = '🥈 ';
+    else if (playerRank === 3) medal = '🥉 ';
+    badge.innerHTML = `
+      <div class="lb-pos-rank-row">
+        <span class="lb-pos-rank">${medal}#${playerRank}</span>
+        <span class="lb-pos-of">of ${totalPlayers} players</span>
+      </div>
+      <div class="lb-pos-percentile">You beat <strong>${percentile}%</strong> of players · Total profit: <strong>€${Math.round(currentEntry.total)}</strong></div>`;
+  }
+
+  // Find max level value for bar scaling
+  const maxLevel = Math.max(1, ...all.flatMap(e => e.level));
+
+  // Decide which rows to show: top 10 + player if not in top 10
+  const topN = 10;
+  const top = all.slice(0, topN);
+  let showRows;
+  if (playerIdx >= 0 && playerIdx < topN) {
+    showRows = top.map(e => ({ entry: e, rank: all.indexOf(e) + 1 }));
+  } else if (playerIdx >= topN) {
+    showRows = [
+      ...top.map(e => ({ entry: e, rank: all.indexOf(e) + 1 })),
+      { ellipsis: true },
+      { entry: all[playerIdx], rank: playerRank }
+    ];
+  } else {
+    showRows = top.map(e => ({ entry: e, rank: all.indexOf(e) + 1 }));
+  }
+
+  const table = document.getElementById('lbTable');
+  table.innerHTML = '';
+
+  showRows.forEach((row, idx) => {
+    if (row.ellipsis) {
+      const e = document.createElement('div');
+      e.className = 'lb-ellipsis';
+      e.textContent = '· · ·';
+      table.appendChild(e);
+      return;
+    }
+    const entry = row.entry;
+    const rank = row.rank;
+    const tier = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+    const youTag = entry.isYou ? `<span class="you-tag">YOU</span>` : '';
+
+    const levelsHtml = entry.level.map((v) => {
+      const h = (v / maxLevel) * 100;
+      return `<div class="lb-level"><div class="lb-level-bar" style="height:0%"></div><div class="lb-level-num">€${Math.round(v)}</div></div>`;
+    }).join('');
+
+    const rowEl = document.createElement('div');
+    rowEl.className = `lb-row ${tier} ${entry.isYou ? 'you' : ''}`;
+    rowEl.style.animationDelay = (idx * 0.04) + 's';
+    rowEl.innerHTML = `
+      <div class="lb-rank ${rank <= 3 ? 'medal' : ''}">${medal}</div>
+      <div class="lb-name">${entry.name}${youTag}</div>
+      <div class="lb-total">€${Math.round(entry.total)}</div>
+      <div class="lb-levels">${levelsHtml}</div>`;
+    table.appendChild(rowEl);
+
+    // Animate the bars after render
+    setTimeout(() => {
+      const bars = rowEl.querySelectorAll('.lb-level-bar');
+      entry.level.forEach((v, i) => {
+        if (bars[i]) bars[i].style.height = ((v / maxLevel) * 100) + '%';
+      });
+    }, 50 + idx * 40);
+  });
+}
+
+/* ============================================================
+   FINAL
+============================================================ */
+async function showFinal() {
+  document.getElementById('game').classList.add('hidden');
+  document.getElementById('final').classList.remove('hidden');
+
+  const allScores = [
+    { key: 'player', name: '☕ Café Lumière (you)', val: state.playerProfit, color: PLAYER_COLOR },
+    { key: 'roboCafe', name: '🤖 RoboCafé', val: state.rivalProfit.roboCafe, color: RIVAL_COLORS.roboCafe },
+    { key: 'luxBrand', name: '💎 LuxBrand', val: state.rivalProfit.luxBrand, color: RIVAL_COLORS.luxBrand },
+    { key: 'budgetBean', name: '🪙 BudgetBean', val: state.rivalProfit.budgetBean, color: RIVAL_COLORS.budgetBean },
+    { key: 'trendCafe', name: '🔥 TrendCafé', val: state.rivalProfit.trendCafe, color: RIVAL_COLORS.trendCafe }
+  ];
+  allScores.sort((a,b) => b.val - a.val);
+
+  const playerRank = allScores.findIndex(s => s.key === 'player') + 1;
+  const banner = document.getElementById('winnerBanner');
+  const sub = document.getElementById('winnerSub');
+  if (playerRank === 1) {
+    banner.innerHTML = '<span class="badge">Champion.</span>';
+    sub.textContent = 'You out-strategized every AI rival across all 5 levels. This is what marketing analytics looks like when it clicks.';
+    try { chip.fanfare(); } catch(e) {}
+    fireConfetti(); setTimeout(() => fireConfetti(), 500); setTimeout(() => fireConfetti(), 1000);
+  } else if (playerRank === 2) {
+    banner.innerHTML = 'Second place.';
+    sub.textContent = 'So close. Look at the segment captures — which one did you under-target?';
+  } else if (playerRank === 3) {
+    banner.innerHTML = 'Podium finish.';
+    sub.textContent = 'Mid-pack finish. The positioning map shows where you sat too close to a rival.';
+  } else {
+    banner.innerHTML = 'Defeated.';
+    sub.textContent = 'The algorithms won this round. Study the segment data — there is always a niche you missed.';
+    try { chip.arpDown(); } catch(e) {}
+  }
+
+  const fs = document.getElementById('finalScores');
+  fs.innerHTML = '';
+  allScores.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'final-card';
+    card.style.borderLeftColor = s.color;
+    card.innerHTML = `
+      <div class="name" style="color:${s.color}">${i === 0 ? '👑 ' : ''}${s.name}</div>
+      <div class="val" style="color:${s.color}">€${Math.round(s.val)}</div>
+      <div class="rank">RANK #${i+1}</div>`;
+    fs.appendChild(card);
+  });
+
+  drawPositionMap();
+  drawProfitChart();
+  drawSegments();
+
+  // Leaderboard
+  const perLevel = state.history.map(h => h.sim.profits.player * (h.mult || 1));
+  while (perLevel.length < 5) perLevel.push(0);
+  const lastName = (() => { try { return localStorage.getItem(LB_NAME_KEY) || ''; } catch(e) { return ''; } })();
+  document.getElementById('lbNameInput').value = lastName;
+  document.getElementById('lbNameEntry').style.display = '';
+  document.getElementById('lbSavedMsg').classList.remove('show');
+
+  // Render immediately with whatever we have, then fetch and re-render
+  renderLeaderboard({ name: lastName || 'You', level: perLevel, isYou: true, saved: false });
+  await fetchScoresFromAPI();
+  renderLeaderboard({ name: lastName || 'You', level: perLevel, isYou: true, saved: false });
+}
+
+function drawPositionMap() {
+  const svg = document.getElementById('posmap');
+  svg.innerHTML = '';
+  const W = 500, H = 280;
+  svg.insertAdjacentHTML('beforeend', `
+    <line x1="40" y1="${H-40}" x2="${W-20}" y2="${H-40}" stroke="rgba(255,255,255,0.1)"/>
+    <line x1="40" y1="20" x2="40" y2="${H-40}" stroke="rgba(255,255,255,0.1)"/>
+    <text x="${W/2}" y="${H-10}" fill="#7E89A8" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="1">PREMIUM →</text>
+    <text x="14" y="${H/2}" fill="#7E89A8" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="1" transform="rotate(-90 14 ${H/2})">PRICE →</text>`);
+
+  function premiumScore(p) {
+    let s = 0;
+    s += BASE_SEGMENTS.business.partworths.coffee[p.coffee];
+    s += BASE_SEGMENTS.business.partworths.location[p.location];
+    s += BASE_SEGMENTS.business.partworths.extras[p.extras];
+    return s;
+  }
+  const points = [];
+  state.history.forEach((h, i) => {
+    points.push({ p: h.products.player, who: 'player', round: i+1, color: PLAYER_COLOR });
+    for (const slot of Object.keys(h.products)) {
+      if (slot === 'player') continue;
+      points.push({ p: h.products[slot], who: slot, round: i+1, color: RIVAL_COLORS[slot] });
+    }
+  });
+  if (points.length === 0) return;
+  const xs = points.map(pt => premiumScore(pt.p));
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = 2, maxY = 8;
+  const sx = v => 50 + (v - minX) / (maxX - minX + 0.01) * (W - 90);
+  const sy = v => (H-50) - (v - minY) / (maxY - minY) * (H - 90);
+  for (const pt of points) {
+    const x = sx(premiumScore(pt.p));
+    const y = sy(pt.p.price);
+    svg.insertAdjacentHTML('beforeend', `
+      <circle cx="${x}" cy="${y}" r="8" fill="${pt.color}" opacity="0.9"/>
+      <text x="${x}" y="${y+3}" fill="#0A0F1E" font-size="10" text-anchor="middle" font-weight="700">${pt.round}</text>`);
+  }
+}
+
+function drawProfitChart() {
+  const svg = document.getElementById('profitChart');
+  svg.innerHTML = '';
+  const W = 500, H = 280;
+  const pad = 40;
+  if (state.history.length === 0) return;
+  const allVals = [];
+  state.history.forEach(h => {
+    for (const sn of Object.keys(h.products)) {
+      allVals.push(h.sim.profits[sn] * (h.mult || 1));
+    }
+  });
+  const maxV = Math.max(...allVals, 1);
+  svg.insertAdjacentHTML('beforeend', `
+    <line x1="${pad}" y1="${H-pad}" x2="${W-20}" y2="${H-pad}" stroke="rgba(255,255,255,0.1)"/>
+    <line x1="${pad}" y1="20" x2="${pad}" y2="${H-pad}" stroke="rgba(255,255,255,0.1)"/>
+    <text x="${W/2}" y="${H-12}" fill="#7E89A8" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="1">LEVEL</text>`);
+  const groupW = (W - pad - 30) / state.history.length;
+  state.history.forEach((h, i) => {
+    const slotKeys = Object.keys(h.products);
+    const barW = (groupW - 6) / slotKeys.length;
+    slotKeys.forEach((sn, j) => {
+      const color = getColorFor(sn);
+      const v = h.sim.profits[sn] * (h.mult || 1);
+      const bh = (v / maxV) * (H - pad - 20);
+      const x = pad + 5 + i * groupW + j * barW;
+      svg.insertAdjacentHTML('beforeend', `
+        <rect x="${x}" y="${H - pad - bh}" width="${barW - 1}" height="${Math.max(bh,1)}" fill="${color}" rx="2" opacity="0.95"/>`);
+    });
+    svg.insertAdjacentHTML('beforeend', `<text x="${pad + 5 + i*groupW + groupW/2}" y="${H-pad+14}" fill="#7E89A8" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">${i+1}</text>`);
+  });
+}
+
+function drawSegments() {
+  const root = document.getElementById('segmentsFinal');
+  root.innerHTML = '';
+  for (const [k, seg] of Object.entries(BASE_SEGMENTS)) {
+    const cap = state.segmentCaptures[k];
+    const total = cap.player + cap.roboCafe + cap.luxBrand + cap.budgetBean + cap.trendCafe + cap.nobuy;
+    if (total === 0) continue;
+    const pct = (v) => total ? (v / total * 100) : 0;
+    const card = document.createElement('div');
+    card.className = 'seg-card';
+    card.innerHTML = `
+      <div class="nm" style="color:${seg.color}">${seg.emoji} ${seg.name} <span style="opacity:0.5;font-weight:400;font-size:11px">· ${seg.size}% base</span></div>
+      <div class="desc">${seg.desc}</div>
+      <div class="seg-stats">
+        <span>You <strong style="color:${PLAYER_COLOR}">${cap.player}</strong></span>
+        <span>🤖 <strong style="color:${RIVAL_COLORS.roboCafe}">${cap.roboCafe}</strong></span>
+        <span>💎 <strong style="color:${RIVAL_COLORS.luxBrand}">${cap.luxBrand}</strong></span>
+        <span>🪙 <strong style="color:${RIVAL_COLORS.budgetBean}">${cap.budgetBean}</strong></span>
+        <span>🔥 <strong style="color:${RIVAL_COLORS.trendCafe}">${cap.trendCafe}</strong></span>
+      </div>
+      <div class="seg-bar">
+        <div style="width:${pct(cap.player)}%;background:${PLAYER_COLOR}"></div>
+        <div style="width:${pct(cap.roboCafe)}%;background:${RIVAL_COLORS.roboCafe}"></div>
+        <div style="width:${pct(cap.luxBrand)}%;background:${RIVAL_COLORS.luxBrand}"></div>
+        <div style="width:${pct(cap.budgetBean)}%;background:${RIVAL_COLORS.budgetBean}"></div>
+        <div style="width:${pct(cap.trendCafe)}%;background:${RIVAL_COLORS.trendCafe}"></div>
+        <div style="flex:1;background:rgba(255,255,255,0.05)"></div>
+      </div>`;
+    root.appendChild(card);
+  }
+}
+</script>
+</body>
+</html>

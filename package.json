@@ -1,0 +1,26 @@
+{
+  "name": "brand-battle",
+  "version": "1.0.0",
+  "description": "Brand Battle — a marketing analytics game built for ESSEC's Marketing Analytics course. Compete against AI rivals across 5 levels using conjoint analysis, segmentation, positioning, and demand modeling.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "marketing-analytics",
+    "education",
+    "conjoint-analysis",
+    "game",
+    "essec"
+  ],
+  "author": "Faraz",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.11.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
